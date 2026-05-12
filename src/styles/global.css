@@ -1,24 +1,23 @@
-* {
-
-  margin: 0;
-
-  padding: 0;
-
-  box-sizing: border-box;
-
-  font-family: "Poppins", sans-serif;
-}
+@import "tailwindcss";
 
 body {
 
   background:
     linear-gradient(
       135deg,
-      #060b26,
-      #091540
+      #050816,
+      #091540,
+      #101b4d
     );
+
+  min-height: 100vh;
 
   color: white;
 
-  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+* {
+
+  box-sizing: border-box;
 }

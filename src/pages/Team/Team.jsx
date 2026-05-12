@@ -1,6 +1,7 @@
 import {
   ref,
-  update
+  update,
+  onValue
 }
 from "firebase/database";
 
@@ -20,6 +21,12 @@ import {
 }
 from "react-router-dom";
 
+import {
+  useEffect,
+  useState
+}
+from "react";
+
 export default function Team() {
 
   const auction =
@@ -32,6 +39,29 @@ export default function Team() {
     useTimer(
       auction?.timerEnd
     );
+
+  const [team, setTeam] =
+    useState(null);
+
+  useEffect(() => {
+
+    const teamRef =
+      ref(
+        db,
+        `teams/${teamId}`
+      );
+
+    onValue(
+      teamRef,
+      snapshot => {
+
+        setTeam(
+          snapshot.val()
+        );
+      }
+    );
+
+  }, []);
 
   async function placeBid(
     amount
@@ -48,7 +78,22 @@ export default function Team() {
     ) {
 
       alert(
-        "You already have highest bid"
+        "Already highest bidder"
+      );
+
+      return;
+    }
+
+    const newBid =
+      auction.currentBid +
+      amount;
+
+    if (
+      newBid > team.purse
+    ) {
+
+      alert(
+        "Insufficient purse"
       );
 
       return;
@@ -59,8 +104,7 @@ export default function Team() {
       {
 
         currentBid:
-          auction.currentBid +
-          amount,
+          newBid,
 
         highestBidder:
           teamId,
@@ -79,8 +123,13 @@ export default function Team() {
       }}>
 
       <h1>
-        {teamId}
+        {team?.name}
       </h1>
+
+      <h2>
+        Purse:
+        {team?.purse}
+      </h2>
 
       {auction?.currentPlayer && (
 
@@ -152,6 +201,30 @@ export default function Team() {
 
         </div>
       )}
+
+      <div
+        style={{
+          marginTop: "40px"
+        }}>
+
+        <h2>
+          Squad
+        </h2>
+
+        {team?.players?.map(
+          (player, index) => (
+
+            <div key={index}>
+
+              {player.name}
+              -
+              ₹{player.price}
+
+            </div>
+          )
+        )}
+
+      </div>
 
     </div>
   );

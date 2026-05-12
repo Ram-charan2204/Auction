@@ -1,6 +1,8 @@
 import {
   ref,
-  update
+  update,
+  get,
+  set
 }
 from "firebase/database";
 
@@ -35,26 +37,86 @@ export default function Host() {
       auction?.timerEnd
     );
 
+  async function resetAuction() {
+
+    await set(
+      ref(db, "remainingPlayers"),
+      players
+    );
+
+    await update(
+      ref(db, "teams/teamA"),
+      {
+        purse: 20000,
+        players: []
+      }
+    );
+
+    await update(
+      ref(db, "teams/teamB"),
+      {
+        purse: 20000,
+        players: []
+      }
+    );
+
+    await update(
+      ref(db, "teams/teamC"),
+      {
+        purse: 20000,
+        players: []
+      }
+    );
+
+    alert(
+      "Auction Reset"
+    );
+  }
+
   async function startPlayer() {
 
-    const randomPlayer =
-
-      players[
-        Math.floor(
-          Math.random() *
-          players.length
+    const snapshot =
+      await get(
+        ref(
+          db,
+          "remainingPlayers"
         )
-      ];
+      );
+
+    const remaining =
+      snapshot.val() || [];
+
+    if (
+      remaining.length === 0
+    ) {
+
+      alert(
+        "Auction Finished"
+      );
+
+      return;
+    }
+
+    const selectedPlayer =
+      remaining.pop();
+
+    await set(
+      ref(
+        db,
+        "remainingPlayers"
+      ),
+      remaining
+    );
 
     await update(
       ref(db, "auction"),
       {
 
         currentPlayer:
-          randomPlayer,
+          selectedPlayer,
 
         currentBid:
-          randomPlayer.basePrice,
+          selectedPlayer.basePrice,
 
         highestBidder: "",
 
@@ -70,10 +132,83 @@ export default function Host() {
 
   async function sellPlayer() {
 
-    alert(
-      `${auction.currentPlayer.name}
-       sold to
-       ${auction.highestBidder}`
+    if (
+      !auction.highestBidder
+    ) {
+
+      alert(
+        "Unsold"
+      );
+
+      await update(
+        ref(db, "auction"),
+        {
+
+          currentPlayer: null,
+
+          currentBid: 0,
+
+          highestBidder: "",
+
+          timerEnd: 0,
+
+          status: "WAITING"
+        }
+      );
+
+      return;
+    }
+
+    const teamRef =
+      ref(
+        db,
+        `teams/${auction.highestBidder}`
+      );
+
+    const snapshot =
+      await get(teamRef);
+
+    const team =
+      snapshot.val();
+
+    const updatedPlayers =
+      team.players || [];
+
+    updatedPlayers.push({
+
+      name:
+        auction.currentPlayer.name,
+
+      price:
+        auction.currentBid
+    });
+
+    await update(
+      teamRef,
+      {
+
+        purse:
+          team.purse -
+          auction.currentBid,
+
+        players:
+          updatedPlayers
+      }
+    );
+
+    await set(
+      ref(db, "lastSold"),
+      {
+
+        player:
+          auction.currentPlayer.name,
+
+        team:
+          auction.highestBidder,
+
+        price:
+          auction.currentBid
+      }
     );
 
     await update(
@@ -117,7 +252,17 @@ export default function Host() {
       </h1>
 
       <button
-        onClick={startPlayer}>
+        onClick={resetAuction}>
+
+        Reset Auction
+
+      </button>
+
+      <button
+        onClick={startPlayer}
+        style={{
+          marginLeft: "20px"
+        }}>
 
         Start Player
 
