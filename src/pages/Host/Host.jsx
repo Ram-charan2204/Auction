@@ -1,8 +1,18 @@
 import {
   ref,
-  update
+  update,
+  get
 }
 from "firebase/database";
+
+import {
+  useEffect,
+  useState
+}
+from "react";
+
+import SoldModal
+from "../../components/SoldModal";
 
 import {
   db
@@ -42,8 +52,25 @@ export default function Host() {
 
   const timeLeft =
     useTimer(
-      auction?.timerEnd
+
+      auction?.timerEnd,
+
+      auction?.paused
     );
+
+  const [
+    showSoldModal,
+
+    setShowSoldModal
+
+  ] = useState(false);
+
+  const [
+    soldData,
+
+    setSoldData
+
+  ] = useState(null);
 
   async function startPlayer() {
 
@@ -73,226 +100,623 @@ export default function Host() {
 
         paused: false,
 
+        remainingTime: 10000,
+
         status: "LIVE"
       }
     );
   }
 
+  async function togglePause() {
+
+    if (!auction)
+      return;
+
+    if (!auction.timerEnd)
+      return;
+
+    if (!auction.paused) {
+
+      const remaining =
+
+        auction.timerEnd -
+        Date.now();
+
+      await update(
+        ref(db, "auction"),
+        {
+
+          paused: true,
+
+          remainingTime:
+            remaining
+        }
+      );
+
+    } else {
+
+      await update(
+        ref(db, "auction"),
+        {
+
+          paused: false,
+
+          timerEnd:
+
+            Date.now() +
+
+            auction.remainingTime
+        }
+      );
+    }
+  }
+
+  useEffect(() => {
+
+    if (!auction)
+      return;
+
+    if (!auction.timerEnd)
+      return;
+
+    const interval =
+      setInterval(async () => {
+
+        if (auction.paused)
+          return;
+
+        const remaining =
+
+          auction.timerEnd -
+          Date.now();
+
+        if (remaining <= 0) {
+
+          clearInterval(interval);
+
+          const sold =
+            auction.highestBidder;
+
+          if (
+            auction.status ===
+            "ENDED"
+          ) return;
+
+          if (sold) {
+
+            const teamsRef =
+              ref(
+                db,
+                "teams"
+              );
+
+            const teamsSnap =
+              await get(
+                teamsRef
+              );
+
+            const teams =
+              teamsSnap.val();
+
+            let teamKey =
+              null;
+
+            Object.keys(
+              teams
+            ).forEach(key => {
+
+              if (
+                teams[key].name ===
+                auction.highestBidder
+              ) {
+
+                teamKey = key;
+              }
+            });
+
+            if (teamKey) {
+
+              const team =
+                teams[teamKey];
+
+              const updatedPlayers =
+
+                team.players
+
+                  ? [
+
+                      ...team.players,
+
+                      {
+
+                        name:
+                          auction.currentPlayer.name,
+
+                        price:
+                          auction.currentBid
+                      }
+                    ]
+
+                  : [
+
+                      {
+
+                        name:
+                          auction.currentPlayer.name,
+
+                        price:
+                          auction.currentBid
+                      }
+                    ];
+
+              await update(
+
+                ref(
+                  db,
+                  `teams/${teamKey}`
+                ),
+
+                {
+
+                  purse:
+
+                    team.purse -
+
+                    auction.currentBid,
+
+                  players:
+                    updatedPlayers
+                }
+              );
+            }
+          }
+
+          setSoldData({
+
+            sold:
+              !!sold,
+
+            player:
+              auction.currentPlayer
+                ?.name,
+
+            team:
+              auction.highestBidder,
+
+            price:
+              auction.currentBid
+          });
+
+          setShowSoldModal(true);
+
+          await update(
+            ref(db, "auction"),
+            {
+
+              status: "ENDED"
+            }
+          );
+
+          setTimeout(async () => {
+
+            setShowSoldModal(false);
+
+            await update(
+              ref(db, "auction"),
+              {
+
+                currentPlayer:
+                  null,
+
+                currentBid: 0,
+
+                highestBidder: "",
+
+                timerEnd: null,
+
+                paused: false,
+
+                remainingTime: 0,
+
+                status: "IDLE"
+              }
+            );
+
+          }, 5000);
+        }
+
+      }, 500);
+
+    return () =>
+      clearInterval(interval);
+
+  }, [auction]);
+
   return (
 
-    <div
-      className="
-
-      min-h-screen
-
-      max-w-7xl
-      mx-auto
-
-      p-8
-    "
-
-    >
+    <>
 
       <div
         className="
 
-        flex
-        flex-col
-        lg:flex-row
+        h-screen
 
-        justify-between
-        items-center
+        overflow-hidden
 
-        gap-6
+        max-w-[1800px]
 
-        mb-10
+        mx-auto
+
+        p-4
       "
 
       >
 
-        <div>
+        {/* HEADER */}
 
-          <h1
-            className="
-
-            text-6xl
-            font-bold
-          "
-
-          >
-
-            Bit Wars
-
-          </h1>
-
-          <p
-            className="
-
-            text-slate-300
-            mt-3
-            text-lg
-          "
-
-          >
-
-            Live Auction Control Center
-
-          </p>
-
-        </div>
-
-        <Button
-
-          onClick={startPlayer}
-
+        <div
           className="
 
-          text-lg
-          h-14
-          px-10
+          h-[70px]
+
+          flex
+          justify-between
+          items-center
+
+          mb-4
         "
 
         >
 
-          Start Auction
+          <div>
 
-        </Button>
+            <h1
+              className="
 
-      </div>
+              text-4xl
+              font-black
+            "
 
-      {
+            >
 
-        auction?.currentPlayer && (
+              Bit Wars
+
+            </h1>
+
+            <p
+              className="
+
+              text-slate-400
+
+              text-sm
+            "
+
+            >
+
+              Live Auction Control Center
+
+            </p>
+
+          </div>
 
           <div
-            className="space-y-8">
+            className="flex gap-3">
 
-            <PlayerCard
+            <Button
 
-              player={
-                auction.currentPlayer
+              onClick={startPlayer}
+
+              className="
+
+              h-12
+
+              px-8
+
+              text-lg
+            "
+
+            >
+
+              Start Auction
+
+            </Button>
+
+            <Button
+
+              onClick={togglePause}
+
+              className="
+
+              h-12
+
+              px-8
+
+              text-lg
+
+              bg-yellow-500
+
+              hover:bg-yellow-600
+            "
+
+            >
+
+              {
+
+                auction?.paused
+
+                  ? "Resume"
+
+                  : "Pause"
               }
 
-              currentBid={
-                auction.currentBid
-              }
+            </Button>
 
-            />
+          </div>
+
+        </div>
+
+        {
+
+          auction?.currentPlayer && (
 
             <div
               className="
 
               grid
-              grid-cols-1
-              lg:grid-cols-2
 
-              gap-8
+              grid-cols-1
+
+              xl:grid-cols-2
+
+              gap-4
+
+              h-[calc(100vh-100px)]
             "
 
             >
 
-              <Card
-                className="p-10">
+              {/* LEFT */}
 
-                <h2
-                  className="
-
-                  text-3xl
-                  font-bold
-                  mb-8
-                "
-
-                >
-
-                  Current Bid
-
-                </h2>
-
-                <AnimatedBid
-                  bid={
-                    auction.currentBid
-                  }
-                />
-
-              </Card>
-
-              <Card
+              <div
                 className="
 
-                p-10
+                h-full
+              "
+
+              >
+
+                <PlayerCard
+
+                  player={
+                    auction.currentPlayer
+                  }
+
+                  currentBid={
+                    auction.currentBid
+                  }
+
+                  compact={true}
+
+                />
+
+              </div>
+
+              {/* RIGHT */}
+
+              <div
+                className="
+
+                h-full
 
                 flex
                 flex-col
-                items-center
-                justify-center
+
+                gap-4
               "
 
               >
 
-                <h2
+                {/* TIMER */}
+
+                <Card
                   className="
 
-                  text-3xl
-                  font-bold
-                  mb-8
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  items-center
+                  justify-center
                 "
 
                 >
 
-                  Auction Timer
+                  <h2
+                    className="
 
-                </h2>
+                    text-2xl
+                    font-bold
 
-                <TimerRing
-                  timeLeft={timeLeft}
-                />
+                    mb-4
+                  "
 
-              </Card>
+                  >
+
+                    Auction Timer
+
+                  </h2>
+
+                  <div
+                    className="relative">
+
+                    <TimerRing
+                      timeLeft={timeLeft}
+                    />
+
+                    {
+
+                      auction?.paused && (
+
+                        <div
+                          className="
+
+                          absolute
+                          inset-0
+
+                          flex
+                          items-center
+                          justify-center
+
+                          bg-black/50
+
+                          rounded-full
+                        "
+
+                        >
+
+                          <h1
+                            className="
+
+                            text-2xl
+                            font-black
+
+                            text-yellow-400
+                          "
+
+                          >
+
+                            PAUSED
+
+                          </h1>
+
+                        </div>
+                      )
+                    }
+
+                  </div>
+
+                </Card>
+
+                {/* BID */}
+
+                <Card
+                  className="
+
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  justify-center
+                "
+
+                >
+
+                  <h2
+                    className="
+
+                    text-2xl
+                    font-bold
+
+                    mb-4
+                  "
+
+                  >
+
+                    Current Bid
+
+                  </h2>
+
+                  <AnimatedBid
+                    bid={
+                      auction.currentBid
+                    }
+                  />
+
+                </Card>
+
+                {/* HIGHEST BIDDER */}
+
+                <Card
+                  className="
+
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  justify-center
+                "
+
+                >
+
+                  <h2
+                    className="
+
+                    text-2xl
+                    font-bold
+
+                    mb-4
+                  "
+
+                  >
+
+                    Highest Bidder
+
+                  </h2>
+
+                  <p
+                    className="
+
+                    text-3xl
+
+                    text-blue-400
+
+                    font-bold
+                  "
+
+                  >
+
+                    {
+
+                      auction.highestBidder ||
+
+                      "Waiting..."
+                    }
+
+                  </p>
+
+                </Card>
+
+              </div>
 
             </div>
+          )
+        }
 
-            <Card
-              className="p-8">
+      </div>
 
-              <h2
-                className="
+      <SoldModal
 
-                text-3xl
-                font-bold
-                mb-5
-              "
+        open={showSoldModal}
 
-              >
+        sold={soldData?.sold}
 
-                Highest Bidder
+        player={soldData?.player}
 
-              </h2>
+        team={soldData?.team}
 
-              <p
-                className="
+        price={soldData?.price}
 
-                text-4xl
-                text-blue-400
-                font-semibold
-              "
+      />
 
-              >
-
-                {
-
-                  auction.highestBidder ||
-
-                  "Waiting for bids..."
-                }
-
-              </p>
-
-            </Card>
-
-          </div>
-        )
-      }
-
-    </div>
+    </>
   );
 }

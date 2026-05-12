@@ -42,6 +42,9 @@ from "../../components/ui/Button";
 import Card
 from "../../components/ui/Card";
 
+import SoldModal
+from "../../components/SoldModal";
+
 export default function Team() {
 
   const auction =
@@ -52,11 +55,28 @@ export default function Team() {
 
   const timeLeft =
     useTimer(
-      auction?.timerEnd
+
+      auction?.timerEnd,
+
+      auction?.paused
     );
 
   const [team, setTeam] =
     useState(null);
+
+  const [
+    showSoldModal,
+
+    setShowSoldModal
+
+  ] = useState(false);
+
+  const [
+    soldData,
+
+    setSoldData
+
+  ] = useState(null);
 
   useEffect(() => {
 
@@ -82,6 +102,43 @@ export default function Team() {
 
   }, [teamId]);
 
+  useEffect(() => {
+
+    if (!auction)
+      return;
+
+    if (
+      auction.status ===
+      "ENDED"
+    ) {
+
+      setSoldData({
+
+        sold:
+          !!auction.highestBidder,
+
+        player:
+          auction.currentPlayer
+            ?.name,
+
+        team:
+          auction.highestBidder,
+
+        price:
+          auction.currentBid
+      });
+
+      setShowSoldModal(true);
+
+      setTimeout(() => {
+
+        setShowSoldModal(false);
+
+      }, 5000);
+    }
+
+  }, [auction]);
+
   async function placeBid(
     amount
   ) {
@@ -93,7 +150,7 @@ export default function Team() {
 
     if (
       auction.highestBidder ===
-      teamId
+      team?.name
     ) {
 
       alert(
@@ -102,6 +159,9 @@ export default function Team() {
 
       return;
     }
+
+    if (auction?.paused)
+      return;
 
     const newBid =
       auction.currentBid +
@@ -136,451 +196,441 @@ export default function Team() {
 
   return (
 
-    <div
-      className="
-
-      min-h-screen
-
-      max-w-7xl
-      mx-auto
-
-      p-8
-    "
-
-    >
+    <>
 
       <div
         className="
 
-        flex
-        flex-col
-        lg:flex-row
+        h-screen
 
-        justify-between
-        items-center
+        overflow-hidden
 
-        gap-6
+        max-w-[1800px]
 
-        mb-10
+        mx-auto
+
+        p-4
       "
 
       >
 
-        <div>
+        {/* HEADER */}
 
-          <h1
-            className="
-
-            text-6xl
-            font-bold
-          "
-
-          >
-
-            {team?.name}
-
-          </h1>
-
-          <p
-            className="
-
-            text-slate-300
-            mt-3
-            text-lg
-          "
-
-          >
-
-            Live Team Auction Panel
-
-          </p>
-
-        </div>
-
-        <Card
+        <div
           className="
 
-          px-8
-          py-5
+          h-[70px]
+
+          flex
+          justify-between
+          items-center
+
+          mb-4
         "
 
         >
 
-          <h2
+          <div>
+
+            <h1
+              className="
+
+              text-4xl
+              font-black
+            "
+
+            >
+
+              {team?.name}
+
+            </h1>
+
+            <p
+              className="
+
+              text-slate-400
+
+              text-sm
+            "
+
+            >
+
+              Live Team Dashboard
+
+            </p>
+
+          </div>
+
+          <Card
             className="
 
-            text-xl
-            text-slate-300
+            px-6
+            py-4
           "
 
           >
 
-            Purse
+            <p
+              className="
 
-          </h2>
+              text-slate-400
+              text-sm
+            "
 
-          <h1
-            className="
+            >
 
-            text-5xl
-            font-bold
-            text-green-400
-            mt-2
-          "
+              Remaining Purse
 
-          >
+            </p>
 
-            ₹ {team?.purse || 0}
+            <h1
+              className="
 
-          </h1>
+              text-3xl
+              font-black
 
-        </Card>
+              text-green-400
+            "
 
-      </div>
+            >
 
-      {
+              ₹ {team?.purse || 0}
 
-        auction?.currentPlayer && (
+            </h1>
 
-          <div
-            className="space-y-8">
+          </Card>
 
-            <PlayerCard
+        </div>
 
-              player={
-                auction.currentPlayer
-              }
+        {
 
-              currentBid={
-                auction.currentBid
-              }
-
-            />
+          auction?.currentPlayer && (
 
             <div
               className="
 
               grid
-              grid-cols-1
-              lg:grid-cols-2
 
-              gap-8
+              grid-cols-1
+
+              xl:grid-cols-2
+
+              gap-4
+
+              h-[calc(100vh-100px)]
             "
 
             >
 
-              <Card
-                className="p-10">
+              {/* LEFT */}
 
-                <h2
-                  className="
-
-                  text-3xl
-                  font-bold
-                  mb-8
-                "
-
-                >
-
-                  Current Bid
-
-                </h2>
-
-                <AnimatedBid
-                  bid={
-                    auction.currentBid
-                  }
-                />
-
-              </Card>
-
-              <Card
+              <div
                 className="
 
-                p-10
+                h-full
+              "
+
+              >
+
+                <PlayerCard
+
+                  player={
+                    auction.currentPlayer
+                  }
+
+                  currentBid={
+                    auction.currentBid
+                  }
+
+                  compact={true}
+
+                />
+
+              </div>
+
+              {/* RIGHT */}
+
+              <div
+                className="
+
+                h-full
 
                 flex
                 flex-col
-                items-center
-                justify-center
+
+                gap-4
               "
 
               >
 
-                <h2
+                {/* TIMER */}
+
+                <Card
                   className="
 
-                  text-3xl
-                  font-bold
-                  mb-8
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  items-center
+                  justify-center
                 "
 
                 >
 
-                  Auction Timer
-
-                </h2>
-
-                <TimerRing
-                  timeLeft={timeLeft}
-                />
-
-              </Card>
-
-            </div>
-
-            <Card
-              className="p-8">
-
-              <h2
-                className="
-
-                text-3xl
-                font-bold
-                mb-5
-              "
-
-              >
-
-                Highest Bidder
-
-              </h2>
-
-              <p
-                className="
-
-                text-4xl
-                text-blue-400
-                font-semibold
-              "
-
-              >
-
-                {
-
-                  auction.highestBidder ||
-
-                  "Waiting for bids..."
-                }
-
-              </p>
-
-            </Card>
-
-            <div
-              className="
-
-              grid
-              grid-cols-1
-              md:grid-cols-3
-
-              gap-5
-            "
-
-            >
-
-              <Button
-
-                disabled={
-                  auction.highestBidder ===
-                  team?.name
-                }
-
-                onClick={() =>
-                  placeBid(10)
-                }
-
-                className="
-
-                h-20
-
-                text-3xl
-
-                bg-blue-500
-                hover:bg-blue-600
-              "
-
-              >
-
-                +10
-
-              </Button>
-
-              <Button
-
-                disabled={
-                  auction.highestBidder ===
-                  team?.name
-                }
-
-                onClick={() =>
-                  placeBid(50)
-                }
-
-                className="
-
-                h-20
-
-                text-3xl
-
-                bg-purple-500
-                hover:bg-purple-600
-              "
-
-              >
-
-                +50
-
-              </Button>
-
-              <Button
-
-                disabled={
-                  auction.highestBidder ===
-                  team?.name
-                }
-
-                onClick={() =>
-                  placeBid(100)
-                }
-
-                className="
-
-                h-20
-
-                text-3xl
-
-                bg-green-500
-                hover:bg-green-600
-              "
-
-              >
-
-                +100
-
-              </Button>
-
-            </div>
-
-            <Card
-              className="p-8">
-
-              <h2
-                className="
-
-                text-3xl
-                font-bold
-                mb-6
-              "
-
-              >
-
-                Squad
-
-              </h2>
-
-              {
-
-                team?.players?.length >
-
-                0 ? (
-
-                  <div
+                  <h2
                     className="
 
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    lg:grid-cols-3
+                    text-2xl
+                    font-bold
 
-                    gap-5
+                    mb-4
                   "
 
                   >
 
+                    Auction Timer
+
+                  </h2>
+
+                  <div
+                    className="relative">
+
+                    <TimerRing
+                      timeLeft={timeLeft}
+                    />
+
                     {
 
-                      team.players.map(
-                        (
-                          player,
-                          index
-                        ) => (
+                      auction?.paused && (
 
-                          <div
+                        <div
+                          className="
 
-                            key={index}
+                          absolute
+                          inset-0
 
+                          flex
+                          items-center
+                          justify-center
+
+                          bg-black/50
+
+                          rounded-full
+                        "
+
+                        >
+
+                          <h1
                             className="
 
-                            bg-white/5
+                            text-2xl
+                            font-black
 
-                            border
-                            border-white/10
-
-                            rounded-2xl
-
-                            p-5
+                            text-yellow-400
                           "
 
                           >
 
-                            <h2
-                              className="
+                            PAUSED
 
-                              text-2xl
-                              font-bold
-                            "
+                          </h1>
 
-                            >
-
-                              {player.name}
-
-                            </h2>
-
-                            <p
-                              className="
-
-                              text-green-400
-                              mt-3
-                              text-xl
-                            "
-
-                            >
-
-                              ₹ {player.price}
-
-                            </p>
-
-                          </div>
-                        )
+                        </div>
                       )
                     }
 
                   </div>
 
-                ) : (
+                </Card>
 
-                  <p
+                {/* BID */}
+
+                <Card
+                  className="
+
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  justify-center
+                "
+
+                >
+
+                  <h2
                     className="
 
-                    text-slate-400
-                    text-xl
+                    text-2xl
+                    font-bold
+
+                    mb-4
                   "
 
                   >
 
-                    No players bought yet
+                    Current Bid
 
-                  </p>
-                )
-              }
+                  </h2>
 
-            </Card>
+                  <AnimatedBid
+                    bid={
+                      auction.currentBid
+                    }
+                  />
 
-          </div>
-        )
-      }
+                </Card>
 
-    </div>
+                {/* BID BUTTONS */}
+
+                <Card
+                  className="
+
+                  flex-1
+
+                  p-6
+
+                  flex
+                  flex-col
+
+                  justify-center
+                "
+
+                >
+
+                  <div
+                    className="
+
+                    grid
+                    grid-cols-3
+
+                    gap-4
+                  "
+
+                  >
+
+                    <Button
+
+                      disabled={
+
+                        auction.highestBidder ===
+                        team?.name ||
+
+                        auction?.paused
+                      }
+
+                      onClick={() =>
+                        placeBid(10)
+                      }
+
+                      className="
+
+                      h-20
+
+                      text-3xl
+
+                      bg-blue-500
+                      hover:bg-blue-600
+                    "
+
+                    >
+
+                      +10
+
+                    </Button>
+
+                    <Button
+
+                      disabled={
+
+                        auction.highestBidder ===
+                        team?.name ||
+
+                        auction?.paused
+                      }
+
+                      onClick={() =>
+                        placeBid(50)
+                      }
+
+                      className="
+
+                      h-20
+
+                      text-3xl
+
+                      bg-purple-500
+                      hover:bg-purple-600
+                    "
+
+                    >
+
+                      +50
+
+                    </Button>
+
+                    <Button
+
+                      disabled={
+
+                        auction.highestBidder ===
+                        team?.name ||
+
+                        auction?.paused
+                      }
+
+                      onClick={() =>
+                        placeBid(100)
+                      }
+
+                      className="
+
+                      h-20
+
+                      text-3xl
+
+                      bg-green-500
+                      hover:bg-green-600
+                    "
+
+                    >
+
+                      +100
+
+                    </Button>
+
+                  </div>
+
+                </Card>
+
+              </div>
+
+            </div>
+          )
+        }
+
+      </div>
+
+      <SoldModal
+
+        open={showSoldModal}
+
+        sold={soldData?.sold}
+
+        player={soldData?.player}
+
+        team={soldData?.team}
+
+        price={soldData?.price}
+
+      />
+
+    </>
   );
 }

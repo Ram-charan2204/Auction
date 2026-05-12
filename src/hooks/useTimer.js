@@ -5,7 +5,11 @@ import {
 from "react";
 
 export default function useTimer(
-  timerEnd
+
+  timerEnd,
+
+  paused
+
 ) {
 
   const [timeLeft, setTimeLeft] =
@@ -19,28 +23,36 @@ export default function useTimer(
     const interval =
       setInterval(() => {
 
-        const remaining =
+        if (paused)
+          return;
+
+        const seconds =
 
           Math.max(
+
             0,
-            Math.floor(
-              (timerEnd - Date.now())
-              / 1000
+
+            Math.ceil(
+              (
+                timerEnd -
+                Date.now()
+              ) / 1000
             )
           );
 
-        setTimeLeft(
-          remaining
-        );
+        setTimeLeft(seconds);
 
       }, 200);
 
     return () =>
-      clearInterval(
-        interval
-      );
+      clearInterval(interval);
 
-  }, [timerEnd]);
+  }, [
+
+    timerEnd,
+
+    paused
+  ]);
 
   return timeLeft;
 }
