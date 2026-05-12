@@ -1,13 +1,42 @@
-import {useState} from "react";
+import {
+  useState
+}
+from "react";
 
-import {signInWithEmailAndPassword}
+import {
+  signInWithEmailAndPassword
+}
 from "firebase/auth";
 
-import {auth}
+import {
+  auth
+}
 from "../../firebase/firebase";
 
-import {useNavigate}
+import {
+  useNavigate
+}
 from "react-router-dom";
+
+import {
+  motion
+}
+from "framer-motion";
+
+import SpotlightBackground
+from "../../components/SpotlightBackground";
+
+import AnimatedLogo
+from "../../components/AnimatedLogo";
+
+import GlowButton
+from "../../components/ui/GlowButton";
+
+import GlassCard
+from "../../components/ui/GlassCard";
+
+import InputField
+from "../../components/ui/InputField";
 
 export default function Login() {
 
@@ -68,76 +97,119 @@ export default function Login() {
   return (
 
     <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}>
+      className="
 
-      <div
-        style={{
-          width: "400px",
-          padding: "40px",
-          background:
-            "rgba(255,255,255,0.06)",
-          borderRadius: "24px"
-        }}>
+      relative
 
-        <h1
-          style={{
-            marginBottom: "25px"
-          }}>
+      min-h-screen
 
-          Bit Wars Login
+      flex
+      items-center
+      justify-center
 
-        </h1>
+      px-6
 
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={e =>
-            setEmail(
-              e.target.value
-            )
-          }
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "15px",
-            borderRadius: "12px",
-            border: "none"
-          }}
-        />
+      overflow-hidden
+    "
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={e =>
-            setPassword(
-              e.target.value
-            )
-          }
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
-            borderRadius: "12px",
-            border: "none"
-          }}
-        />
+    >
 
-        <button
-          onClick={login}
-          style={{
-            width: "100%"
-          }}>
+      <SpotlightBackground />
 
-          Login
+      <motion.div
 
-        </button>
+        initial={{
+          opacity: 0,
+          scale: 0.8,
+          y: 50
+        }}
 
-      </div>
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: 0
+        }}
+
+        transition={{
+          duration: 0.7
+        }}
+
+        className="w-full
+        max-w-md"
+
+      >
+
+        <GlassCard
+          className="p-10">
+
+          <div
+            className="mb-10">
+
+            <AnimatedLogo />
+
+          </div>
+
+          <div
+            className="space-y-5">
+
+            <InputField
+
+              type="email"
+
+              placeholder="Enter email"
+
+              value={email}
+
+              onChange={e =>
+                setEmail(
+                  e.target.value
+                )
+              }
+
+            />
+
+            <InputField
+
+              type="password"
+
+              placeholder="Enter password"
+
+              value={password}
+
+              onChange={e =>
+                setPassword(
+                  e.target.value
+                )
+              }
+
+            />
+
+            <GlowButton
+
+              onClick={login}
+
+              className="
+
+              w-full
+
+              h-14
+
+              text-lg
+
+              mt-5
+            "
+
+            >
+
+              Enter Arena
+
+            </GlowButton>
+
+          </div>
+
+        </GlassCard>
+
+      </motion.div>
 
     </div>
   );
