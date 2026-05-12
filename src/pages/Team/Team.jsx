@@ -10,22 +10,37 @@ import {
 }
 from "../../firebase/firebase";
 
-import useAuction
-from "../../hooks/useAuction";
-
-import useTimer
-from "../../hooks/useTimer";
+import {
+  useEffect,
+  useState
+}
+from "react";
 
 import {
   useParams
 }
 from "react-router-dom";
 
-import {
-  useEffect,
-  useState
-}
-from "react";
+import useAuction
+from "../../hooks/useAuction";
+
+import useTimer
+from "../../hooks/useTimer";
+
+import PlayerCard
+from "../../components/PlayerCard";
+
+import TimerRing
+from "../../components/TimerRing";
+
+import AnimatedBid
+from "../../components/AnimatedBid";
+
+import Button
+from "../../components/ui/Button";
+
+import Card
+from "../../components/ui/Card";
 
 export default function Team() {
 
@@ -51,17 +66,21 @@ export default function Team() {
         `teams/${teamId}`
       );
 
-    onValue(
-      teamRef,
-      snapshot => {
+    const unsubscribe =
+      onValue(
+        teamRef,
+        snapshot => {
 
-        setTeam(
-          snapshot.val()
-        );
-      }
-    );
+          setTeam(
+            snapshot.val()
+          );
+        }
+      );
 
-  }, []);
+    return () =>
+      unsubscribe();
+
+  }, [teamId]);
 
   async function placeBid(
     amount
@@ -78,7 +97,7 @@ export default function Team() {
     ) {
 
       alert(
-        "Already highest bidder"
+        "You already have highest bid"
       );
 
       return;
@@ -107,7 +126,7 @@ export default function Team() {
           newBid,
 
         highestBidder:
-          teamId,
+          team.name,
 
         timerEnd:
           Date.now() + 10000
@@ -118,113 +137,449 @@ export default function Team() {
   return (
 
     <div
-      style={{
-        padding: "40px"
-      }}>
+      className="
 
-      <h1>
-        {team?.name}
-      </h1>
+      min-h-screen
 
-      <h2>
-        Purse:
-        {team?.purse}
-      </h2>
+      max-w-7xl
+      mx-auto
 
-      {auction?.currentPlayer && (
+      p-8
+    "
+
+    >
+
+      <div
+        className="
+
+        flex
+        flex-col
+        lg:flex-row
+
+        justify-between
+        items-center
+
+        gap-6
+
+        mb-10
+      "
+
+      >
 
         <div>
 
-          <h2>
-            {
-              auction.currentPlayer.name
-            }
-          </h2>
+          <h1
+            className="
 
-          <h3>
-            Bid:
-            {
-              auction.currentBid
-            }
-          </h3>
+            text-6xl
+            font-bold
+          "
 
-          <h3>
-            Highest Bidder:
-            {
-              auction.highestBidder ||
-              "None"
-            }
-          </h3>
+          >
 
-          <h1>
-            ⏱️ {timeLeft}
+            {team?.name}
+
           </h1>
 
-          <button
-            disabled={
-              auction.highestBidder ===
-              teamId
-            }
-            onClick={() =>
-              placeBid(10)
-            }>
+          <p
+            className="
 
-            +10
+            text-slate-300
+            mt-3
+            text-lg
+          "
 
-          </button>
+          >
 
-          <button
-            disabled={
-              auction.highestBidder ===
-              teamId
-            }
-            onClick={() =>
-              placeBid(50)
-            }>
+            Live Team Auction Panel
 
-            +50
-
-          </button>
-
-          <button
-            disabled={
-              auction.highestBidder ===
-              teamId
-            }
-            onClick={() =>
-              placeBid(100)
-            }>
-
-            +100
-
-          </button>
+          </p>
 
         </div>
-      )}
 
-      <div
-        style={{
-          marginTop: "40px"
-        }}>
+        <Card
+          className="
 
-        <h2>
-          Squad
-        </h2>
+          px-8
+          py-5
+        "
 
-        {team?.players?.map(
-          (player, index) => (
+        >
 
-            <div key={index}>
+          <h2
+            className="
 
-              {player.name}
-              -
-              ₹{player.price}
+            text-xl
+            text-slate-300
+          "
 
-            </div>
-          )
-        )}
+          >
+
+            Purse
+
+          </h2>
+
+          <h1
+            className="
+
+            text-5xl
+            font-bold
+            text-green-400
+            mt-2
+          "
+
+          >
+
+            ₹ {team?.purse || 0}
+
+          </h1>
+
+        </Card>
 
       </div>
+
+      {
+
+        auction?.currentPlayer && (
+
+          <div
+            className="space-y-8">
+
+            <PlayerCard
+
+              player={
+                auction.currentPlayer
+              }
+
+              currentBid={
+                auction.currentBid
+              }
+
+            />
+
+            <div
+              className="
+
+              grid
+              grid-cols-1
+              lg:grid-cols-2
+
+              gap-8
+            "
+
+            >
+
+              <Card
+                className="p-10">
+
+                <h2
+                  className="
+
+                  text-3xl
+                  font-bold
+                  mb-8
+                "
+
+                >
+
+                  Current Bid
+
+                </h2>
+
+                <AnimatedBid
+                  bid={
+                    auction.currentBid
+                  }
+                />
+
+              </Card>
+
+              <Card
+                className="
+
+                p-10
+
+                flex
+                flex-col
+                items-center
+                justify-center
+              "
+
+              >
+
+                <h2
+                  className="
+
+                  text-3xl
+                  font-bold
+                  mb-8
+                "
+
+                >
+
+                  Auction Timer
+
+                </h2>
+
+                <TimerRing
+                  timeLeft={timeLeft}
+                />
+
+              </Card>
+
+            </div>
+
+            <Card
+              className="p-8">
+
+              <h2
+                className="
+
+                text-3xl
+                font-bold
+                mb-5
+              "
+
+              >
+
+                Highest Bidder
+
+              </h2>
+
+              <p
+                className="
+
+                text-4xl
+                text-blue-400
+                font-semibold
+              "
+
+              >
+
+                {
+
+                  auction.highestBidder ||
+
+                  "Waiting for bids..."
+                }
+
+              </p>
+
+            </Card>
+
+            <div
+              className="
+
+              grid
+              grid-cols-1
+              md:grid-cols-3
+
+              gap-5
+            "
+
+            >
+
+              <Button
+
+                disabled={
+                  auction.highestBidder ===
+                  team?.name
+                }
+
+                onClick={() =>
+                  placeBid(10)
+                }
+
+                className="
+
+                h-20
+
+                text-3xl
+
+                bg-blue-500
+                hover:bg-blue-600
+              "
+
+              >
+
+                +10
+
+              </Button>
+
+              <Button
+
+                disabled={
+                  auction.highestBidder ===
+                  team?.name
+                }
+
+                onClick={() =>
+                  placeBid(50)
+                }
+
+                className="
+
+                h-20
+
+                text-3xl
+
+                bg-purple-500
+                hover:bg-purple-600
+              "
+
+              >
+
+                +50
+
+              </Button>
+
+              <Button
+
+                disabled={
+                  auction.highestBidder ===
+                  team?.name
+                }
+
+                onClick={() =>
+                  placeBid(100)
+                }
+
+                className="
+
+                h-20
+
+                text-3xl
+
+                bg-green-500
+                hover:bg-green-600
+              "
+
+              >
+
+                +100
+
+              </Button>
+
+            </div>
+
+            <Card
+              className="p-8">
+
+              <h2
+                className="
+
+                text-3xl
+                font-bold
+                mb-6
+              "
+
+              >
+
+                Squad
+
+              </h2>
+
+              {
+
+                team?.players?.length >
+
+                0 ? (
+
+                  <div
+                    className="
+
+                    grid
+                    grid-cols-1
+                    md:grid-cols-2
+                    lg:grid-cols-3
+
+                    gap-5
+                  "
+
+                  >
+
+                    {
+
+                      team.players.map(
+                        (
+                          player,
+                          index
+                        ) => (
+
+                          <div
+
+                            key={index}
+
+                            className="
+
+                            bg-white/5
+
+                            border
+                            border-white/10
+
+                            rounded-2xl
+
+                            p-5
+                          "
+
+                          >
+
+                            <h2
+                              className="
+
+                              text-2xl
+                              font-bold
+                            "
+
+                            >
+
+                              {player.name}
+
+                            </h2>
+
+                            <p
+                              className="
+
+                              text-green-400
+                              mt-3
+                              text-xl
+                            "
+
+                            >
+
+                              ₹ {player.price}
+
+                            </p>
+
+                          </div>
+                        )
+                      )
+                    }
+
+                  </div>
+
+                ) : (
+
+                  <p
+                    className="
+
+                    text-slate-400
+                    text-xl
+                  "
+
+                  >
+
+                    No players bought yet
+
+                  </p>
+                )
+              }
+
+            </Card>
+
+          </div>
+        )
+      }
 
     </div>
   );

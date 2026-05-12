@@ -1,8 +1,6 @@
 import {
   ref,
-  update,
-  get,
-  set
+  update
 }
 from "firebase/database";
 
@@ -22,10 +20,20 @@ import {
 }
 from "../../assets/players";
 
-import {
-  useEffect
-}
-from "react";
+import PlayerCard
+from "../../components/PlayerCard";
+
+import TimerRing
+from "../../components/TimerRing";
+
+import AnimatedBid
+from "../../components/AnimatedBid";
+
+import Button
+from "../../components/ui/Button";
+
+import Card
+from "../../components/ui/Card";
 
 export default function Host() {
 
@@ -37,86 +45,26 @@ export default function Host() {
       auction?.timerEnd
     );
 
-  async function resetAuction() {
-
-    await set(
-      ref(db, "remainingPlayers"),
-      players
-    );
-
-    await update(
-      ref(db, "teams/teamA"),
-      {
-        purse: 20000,
-        players: []
-      }
-    );
-
-    await update(
-      ref(db, "teams/teamB"),
-      {
-        purse: 20000,
-        players: []
-      }
-    );
-
-    await update(
-      ref(db, "teams/teamC"),
-      {
-        purse: 20000,
-        players: []
-      }
-    );
-
-    alert(
-      "Auction Reset"
-    );
-  }
-
   async function startPlayer() {
 
-    const snapshot =
-      await get(
-        ref(
-          db,
-          "remainingPlayers"
+    const randomPlayer =
+
+      players[
+        Math.floor(
+          Math.random() *
+          players.length
         )
-      );
-
-    const remaining =
-      snapshot.val() || [];
-
-    if (
-      remaining.length === 0
-    ) {
-
-      alert(
-        "Auction Finished"
-      );
-
-      return;
-    }
-
-    const selectedPlayer =
-      remaining.pop();
-
-    await set(
-      ref(
-        db,
-        "remainingPlayers"
-      ),
-      remaining
-    );
+      ];
 
     await update(
       ref(db, "auction"),
       {
 
         currentPlayer:
-          selectedPlayer,
+          randomPlayer,
 
         currentBid:
-          selectedPlayer.basePrice,
+          randomPlayer.basePrice,
 
         highestBidder: "",
 
@@ -130,178 +78,220 @@ export default function Host() {
     );
   }
 
-  async function sellPlayer() {
-
-    if (
-      !auction.highestBidder
-    ) {
-
-      alert(
-        "Unsold"
-      );
-
-      await update(
-        ref(db, "auction"),
-        {
-
-          currentPlayer: null,
-
-          currentBid: 0,
-
-          highestBidder: "",
-
-          timerEnd: 0,
-
-          status: "WAITING"
-        }
-      );
-
-      return;
-    }
-
-    const teamRef =
-      ref(
-        db,
-        `teams/${auction.highestBidder}`
-      );
-
-    const snapshot =
-      await get(teamRef);
-
-    const team =
-      snapshot.val();
-
-    const updatedPlayers =
-      team.players || [];
-
-    updatedPlayers.push({
-
-      name:
-        auction.currentPlayer.name,
-
-      price:
-        auction.currentBid
-    });
-
-    await update(
-      teamRef,
-      {
-
-        purse:
-          team.purse -
-          auction.currentBid,
-
-        players:
-          updatedPlayers
-      }
-    );
-
-    await set(
-      ref(db, "lastSold"),
-      {
-
-        player:
-          auction.currentPlayer.name,
-
-        team:
-          auction.highestBidder,
-
-        price:
-          auction.currentBid
-      }
-    );
-
-    await update(
-      ref(db, "auction"),
-      {
-
-        currentPlayer: null,
-
-        currentBid: 0,
-
-        highestBidder: "",
-
-        timerEnd: 0,
-
-        status: "WAITING"
-      }
-    );
-  }
-
-  useEffect(() => {
-
-    if (
-      timeLeft === 0 &&
-      auction?.currentPlayer
-    ) {
-
-      sellPlayer();
-    }
-
-  }, [timeLeft]);
-
   return (
 
     <div
-      style={{
-        padding: "40px"
-      }}>
+      className="
 
-      <h1>
-        Host Dashboard
-      </h1>
+      min-h-screen
 
-      <button
-        onClick={resetAuction}>
+      max-w-7xl
+      mx-auto
 
-        Reset Auction
+      p-8
+    "
 
-      </button>
+    >
 
-      <button
-        onClick={startPlayer}
-        style={{
-          marginLeft: "20px"
-        }}>
+      <div
+        className="
 
-        Start Player
+        flex
+        flex-col
+        lg:flex-row
 
-      </button>
+        justify-between
+        items-center
 
-      {auction?.currentPlayer && (
+        gap-6
 
-        <div
-          style={{
-            marginTop: "30px"
-          }}>
+        mb-10
+      "
 
-          <h2>
-            {
-              auction.currentPlayer.name
-            }
-          </h2>
+      >
 
-          <h3>
-            Bid:
-            {
-              auction.currentBid
-            }
-          </h3>
+        <div>
 
-          <h3>
-            Highest Bidder:
-            {
-              auction.highestBidder ||
-              "None"
-            }
-          </h3>
+          <h1
+            className="
 
-          <h1>
-            ⏱️ {timeLeft}
+            text-6xl
+            font-bold
+          "
+
+          >
+
+            Bit Wars
+
           </h1>
 
+          <p
+            className="
+
+            text-slate-300
+            mt-3
+            text-lg
+          "
+
+          >
+
+            Live Auction Control Center
+
+          </p>
+
         </div>
-      )}
+
+        <Button
+
+          onClick={startPlayer}
+
+          className="
+
+          text-lg
+          h-14
+          px-10
+        "
+
+        >
+
+          Start Auction
+
+        </Button>
+
+      </div>
+
+      {
+
+        auction?.currentPlayer && (
+
+          <div
+            className="space-y-8">
+
+            <PlayerCard
+
+              player={
+                auction.currentPlayer
+              }
+
+              currentBid={
+                auction.currentBid
+              }
+
+            />
+
+            <div
+              className="
+
+              grid
+              grid-cols-1
+              lg:grid-cols-2
+
+              gap-8
+            "
+
+            >
+
+              <Card
+                className="p-10">
+
+                <h2
+                  className="
+
+                  text-3xl
+                  font-bold
+                  mb-8
+                "
+
+                >
+
+                  Current Bid
+
+                </h2>
+
+                <AnimatedBid
+                  bid={
+                    auction.currentBid
+                  }
+                />
+
+              </Card>
+
+              <Card
+                className="
+
+                p-10
+
+                flex
+                flex-col
+                items-center
+                justify-center
+              "
+
+              >
+
+                <h2
+                  className="
+
+                  text-3xl
+                  font-bold
+                  mb-8
+                "
+
+                >
+
+                  Auction Timer
+
+                </h2>
+
+                <TimerRing
+                  timeLeft={timeLeft}
+                />
+
+              </Card>
+
+            </div>
+
+            <Card
+              className="p-8">
+
+              <h2
+                className="
+
+                text-3xl
+                font-bold
+                mb-5
+              "
+
+              >
+
+                Highest Bidder
+
+              </h2>
+
+              <p
+                className="
+
+                text-4xl
+                text-blue-400
+                font-semibold
+              "
+
+              >
+
+                {
+
+                  auction.highestBidder ||
+
+                  "Waiting for bids..."
+                }
+
+              </p>
+
+            </Card>
+
+          </div>
+        )
+      }
 
     </div>
   );

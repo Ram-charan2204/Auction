@@ -5,9 +5,9 @@ body {
   background:
     linear-gradient(
       135deg,
-      #050816,
+      #040816,
       #091540,
-      #101b4d
+      #111c44
     );
 
   min-height: 100vh;
@@ -17,7 +17,46 @@ body {
   overflow-x: hidden;
 }
 
-* {
+body::before {
 
-  box-sizing: border-box;
+  content: "";
+
+  position: fixed;
+
+  width: 500px;
+  height: 500px;
+
+  background:
+    rgba(90,120,255,0.15);
+
+  border-radius: 50%;
+
+  filter: blur(120px);
+
+  top: -150px;
+  left: -150px;
+
+  z-index: -1;
+}
+
+body::after {
+
+  content: "";
+
+  position: fixed;
+
+  width: 500px;
+  height: 500px;
+
+  background:
+    rgba(255,90,170,0.12);
+
+  border-radius: 50%;
+
+  filter: blur(120px);
+
+  bottom: -150px;
+  right: -150px;
+
+  z-index: -1;
 }
