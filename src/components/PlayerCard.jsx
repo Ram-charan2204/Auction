@@ -1,19 +1,11 @@
-import {
-  motion
-}
-from "framer-motion";
-
 import Card
 from "./ui/Card";
-
-import Badge
-from "./ui/Badge";
 
 export default function PlayerCard({
 
   player,
 
-  currentBid
+  compact = false
 
 }) {
 
@@ -22,153 +14,297 @@ export default function PlayerCard({
 
   return (
 
-    <motion.div
+    <Card
+      className="
 
-      initial={{
-        opacity: 0,
-        y: 40
-      }}
+      h-full
 
-      animate={{
-        opacity: 1,
-        y: 0
-      }}
+      p-6
+
+      overflow-hidden
+    "
 
     >
 
-      <Card
-        className="overflow-hidden">
+      <div
+        className="
+
+        flex
+
+        flex-col
+        lg:flex-row
+
+        gap-6
+
+        h-full
+      "
+
+      >
+
+        {/* IMAGE */}
 
         <div
-          className="p-8">
+          className="
+
+          flex
+          justify-center
+          items-center
+        "
+
+        >
+
+          <img
+
+            src="/players/default.jpg"
+
+            alt={player.name}
+
+            className={`
+
+            object-cover
+
+            rounded-3xl
+
+            border
+            border-white/10
+
+            ${
+
+              compact
+
+                ? "w-52 h-52"
+
+                : "w-72 h-72"
+            }
+          `}
+
+          />
+
+        </div>
+
+        {/* DETAILS */}
+
+        <div
+          className="
+
+          flex-1
+
+          flex
+          flex-col
+
+          justify-center
+        "
+
+        >
+
+          <h1
+            className={`
+
+            font-black
+
+            mb-6
+
+            ${
+
+              compact
+
+                ? "text-4xl"
+
+                : "text-6xl"
+            }
+          `}
+
+          >
+
+            {player.name}
+
+          </h1>
+
+          {/* BASE PRICE */}
 
           <div
             className="
 
-            flex
-            flex-col
-            lg:flex-row
-            gap-10
-            items-center
+            mb-6
+
+            inline-block
+
+            bg-yellow-500/20
+
+            border
+            border-yellow-400/30
+
+            rounded-2xl
+
+            px-6
+            py-3
           "
 
           >
 
-            <img
-
-              src={
-                player.image ||
-
-                'https://placehold.co/300x300'
-              }
-
-              alt={player.name}
-
+            <p
               className="
 
-              w-72
-              h-72
+              text-yellow-300
 
-              rounded-3xl
-
-              object-cover
-
-              border
-              border-white/10
+              text-lg
+              font-bold
             "
 
-            />
+            >
 
-            <div className="flex-1">
+              Base Price:
+              {" "}
+              ₹ {player.basePrice ?? 0}
+
+            </p>
+
+          </div>
+
+          {/* STATS */}
+
+          <div
+            className="
+
+            grid
+
+            grid-cols-2
+
+            gap-4
+          "
+
+          >
+
+            {/* BATTING */}
+
+            <div
+              className="
+
+              bg-blue-500/10
+
+              border
+              border-blue-400/20
+
+              rounded-2xl
+
+              p-5
+            "
+
+            >
+
+              <h2
+                className="
+
+                text-2xl
+                font-bold
+
+                mb-4
+
+                text-blue-400
+              "
+
+              >
+
+                Batting
+
+              </h2>
 
               <div
-                className="
-                flex
-                gap-3
-                mb-5
-              ">
+                className="space-y-3 text-lg">
 
-                <Badge>
+                <p>
+                  Runs:
+                  {" "}
+                  {player?.batting?.runs ?? 0}
+                </p>
 
-                  LIVE
+                <p>
+                  Strike Rate:
+                  {" "}
+                  {player?.batting?.sr ?? 0}
+                </p>
 
-                </Badge>
+                <p>
+                  Average:
+                  {" "}
+                  {player?.batting?.avg ?? 0}
+                </p>
 
-                <Badge
-                  className="bg-green-500">
+                <p>
+                  Sixes:
+                  {" "}
+                  {player?.batting?.sixes ?? 0}
+                </p>
 
-                  ₹ {currentBid}
-
-                </Badge>
+                <p>
+                  Fours:
+                  {" "}
+                  {player?.batting?.fours ?? 0}
+                </p>
 
               </div>
 
-              <h1
+            </div>
+
+            {/* BOWLING */}
+
+            <div
+              className="
+
+              bg-green-500/10
+
+              border
+              border-green-400/20
+
+              rounded-2xl
+
+              p-5
+            "
+
+            >
+
+              <h2
                 className="
 
-                text-6xl
+                text-2xl
                 font-bold
-                mb-6
+
+                mb-4
+
+                text-green-400
               "
 
               >
 
-                {player.name}
+                Bowling
 
-              </h1>
+              </h2>
 
               <div
-                className="
+                className="space-y-3 text-lg">
 
-                grid
-                grid-cols-2
-                lg:grid-cols-3
-                gap-5
-              "
+                  <p>
+                  Overs:
+                  {" "}
+                  {player?.bowling?.overs ?? 0}
+                </p>
+                <p>
+                  Economy:
+                  {" "}
+                  {player?.bowling?.eco ?? 0}
+                </p>
 
-              >
+                <p>
+                  Wickets:
+                  {" "}
+                  {player?.bowling?.wickets ?? 0}
+                </p>
 
-                <StatBox
-                  label="Runs"
-                  value={
-                    player.runs || 0
-                  }
-                />
-
-                <StatBox
-                  label="Strike Rate"
-                  value={
-                    player.strikeRate || 0
-                  }
-                />
-
-                <StatBox
-                  label="Wickets"
-                  value={
-                    player.wickets || 0
-                  }
-                />
-
-                <StatBox
-                  label="Average"
-                  value={
-                    player.average || 0
-                  }
-                />
-
-                <StatBox
-                  label="Economy"
-                  value={
-                    player.economy || 0
-                  }
-                />
-
-                <StatBox
-                  label="Sixes"
-                  value={
-                    player.sixes || 0
-                  }
-                />
+                <p>
+                  Economy:
+                  {" "}
+                  {player?.bowling?.eco ?? 0}
+                </p>
 
               </div>
 
@@ -178,67 +314,8 @@ export default function PlayerCard({
 
         </div>
 
-      </Card>
+      </div>
 
-    </motion.div>
-  );
-}
-
-function StatBox({
-
-  label,
-
-  value
-
-}) {
-
-  return (
-
-    <div
-      className="
-
-      bg-white/5
-
-      border
-      border-white/10
-
-      rounded-2xl
-
-      p-5
-
-      text-center
-    "
-
-    >
-
-      <p
-        className="
-
-        text-slate-300
-        text-sm
-      "
-
-      >
-
-        {label}
-
-      </p>
-
-      <h2
-        className="
-
-        text-3xl
-        font-bold
-
-        mt-2
-      "
-
-      >
-
-        {value}
-
-      </h2>
-
-    </div>
+    </Card>
   );
 }
