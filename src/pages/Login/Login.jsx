@@ -70,7 +70,79 @@ export default function Login() {
       else if (
         email ===
         "teamA@gmail.com"
-      ) {
+      ) {async function login() {
+
+  try {
+
+    const userCredential =
+
+      await signInWithEmailAndPassword(
+
+        auth,
+
+        email,
+
+        password
+      );
+
+    const loggedInEmail =
+
+      userCredential.user.email;
+
+    console.log(loggedInEmail);
+
+    if (
+
+      loggedInEmail ===
+      "host@gmail.com"
+    ) {
+
+      navigate("/host");
+    }
+
+    else if (
+
+      loggedInEmail ===
+      "teamA@gmail.com"
+    ) {
+
+      navigate("/team/teamA");
+    }
+
+    else if (
+
+      loggedInEmail ===
+      "teamB@gmail.com"
+    ) {
+
+      navigate("/team/teamB");
+    }
+
+    else if (
+
+      loggedInEmail ===
+      "teamC@gmail.com"
+    ) {
+
+      navigate("/team/teamC");
+    }
+
+    else {
+
+      alert(
+        "Unauthorized user"
+      );
+
+      navigate("/");
+    }
+
+  }
+
+  catch (err) {
+
+    alert(err.message);
+  }
+}
 
         navigate("/team/teamA");
       }
