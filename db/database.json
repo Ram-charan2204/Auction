@@ -1,39 +1,58 @@
 {
   "auction": {
     "currentBid": 0,
+
+    "currentPlayer": null,
+
     "highestBidder": "",
-    "timerEnd": 0,
+
     "paused": false,
+
+    "remainingTime": 10000,
+
     "status": "WAITING",
-    "currentPlayer": null
+
+    "timerEnd": 0
   },
+
+  "lastSold": {
+
+    "player": "",
+
+    "price": 0,
+
+    "team": ""
+  },
+
+  "remainingPlayers": [],
 
   "teams": {
 
     "teamA": {
+
       "name": "Team Alpha",
+
       "purse": 20000,
+
       "players": []
     },
 
     "teamB": {
+
       "name": "Team Blaze",
+
       "purse": 20000,
+
       "players": []
     },
 
     "teamC": {
+
       "name": "Team Cyclone",
+
       "purse": 20000,
+
       "players": []
     }
-  },
-
-  "history": [],
-
-  "lastSold": {},
-
-  "playerStatus": {},
-
-  "remainingPlayers": []
+  }
 }

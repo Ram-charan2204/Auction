@@ -68,7 +68,7 @@ export default function ViewerHero({
         <img
 
           src={
-            player.image ||
+            "/players/default.jpg" ||
 
             'https://placehold.co/400'
           }

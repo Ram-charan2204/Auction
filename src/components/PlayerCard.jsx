@@ -301,9 +301,9 @@ export default function PlayerCard({
                 </p>
 
                 <p>
-                  Economy:
+                  Maidens:
                   {" "}
-                  {player?.bowling?.eco ?? 0}
+                  {player?.bowling?.maidens ?? 0}
                 </p>
 
               </div>

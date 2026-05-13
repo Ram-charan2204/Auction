@@ -3,7 +3,7 @@ export const players = [
   {
     id: 1,
     name: "Gandhi Anthamgari",
-    basePrice: 3000,
+    basePrice: 2500,
 
     batting: {
       runs: 39,
@@ -25,7 +25,7 @@ export const players = [
   {
     id: 2,
     name: "Akhil Namani",
-    basePrice: 2800,
+    basePrice: 1800,
 
     batting: {
       runs: 2,
@@ -47,7 +47,7 @@ export const players = [
   {
     id: 3,
     name: "Rishi Preetham",
-    basePrice: 2800,
+    basePrice: 2500,
 
     batting: {
       runs: 26,
@@ -91,7 +91,7 @@ export const players = [
   {
     id: 5,
     name: "Abdus Samee",
-    basePrice: 2000,
+    basePrice: 2500,
 
     batting: {
       runs: 28,
@@ -134,8 +134,8 @@ export const players = [
 
   {
     id: 7,
-    name: "Hemanth",
-    basePrice: 800,
+    name: "Sai Bhargav",
+    basePrice: 1800,
 
     batting: {
       runs: 24,
@@ -156,7 +156,7 @@ export const players = [
 
   {
     id: 8,
-    name: "Sai Bhargav",
+    name: "Lokesh",
     basePrice: 1800,
 
     batting: {
@@ -201,7 +201,7 @@ export const players = [
   {
     id: 10,
     name: "Ram Charan",
-    basePrice: 1100,
+    basePrice: 1500,
 
     batting: {
       runs: 4,
@@ -267,7 +267,7 @@ export const players = [
   {
     id: 13,
     name: "Rohan Kumar",
-    basePrice: 800,
+    basePrice: 1500,
 
     batting: {
       runs: 0,
@@ -289,7 +289,7 @@ export const players = [
   {
     id: 14,
     name: "P Sathwik",
-    basePrice: 500,
+    basePrice: 900,
 
     batting: {
       runs: 10,
@@ -311,7 +311,7 @@ export const players = [
   {
     id: 15,
     name: "V Vijay",
-    basePrice: 500,
+    basePrice: 1800,
 
     batting: {
       runs: 0,
@@ -333,7 +333,7 @@ export const players = [
   {
     id: 16,
     name: "Chetan Kumar",
-    basePrice: 500,
+    basePrice: 1500,
 
     batting: {
       runs: 0,
@@ -355,7 +355,7 @@ export const players = [
   {
     id: 17,
     name: "Aneesh P",
-    basePrice: 500,
+    basePrice: 1500,
 
     batting: {
       runs: 0,
@@ -399,11 +399,11 @@ export const players = [
   {
     id: 19,
     name: "Sai Lenin",
-    basePrice: 700,
+    basePrice: 1800,
 
     batting: {
-      runs: 5,
-      sr: 500.00,
+      runs: 6,
+      sr: 600.00,
       avg: 5.00,
       sixes: 1,
       fours: 0
@@ -421,7 +421,7 @@ export const players = [
   {
     id: 20,
     name: "Nishikanth Sanga",
-    basePrice: 500,
+    basePrice: 800,
 
     batting: {
       runs: 1,
@@ -443,7 +443,7 @@ export const players = [
   {
     id: 21,
     name: "H. Vardhan Reddy",
-    basePrice: 500,
+    basePrice: 800,
 
     batting: {
       runs: 0,
