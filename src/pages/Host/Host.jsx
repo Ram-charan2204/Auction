@@ -1,4 +1,4 @@
-import { ref, update, get, push, set } from "firebase/database";
+import { ref, update, get, push, set, remove } from "firebase/database";
 import { useEffect, useState } from "react";
 import SoldModal from "../../components/SoldModal";
 import { db } from "../../firebase/firebase";
@@ -15,14 +15,35 @@ export default function Host() {
   const auction = useAuction();
   const timeLeft = useTimer(auction?.timerEnd, auction?.paused);
 
-  // Workflow Steps: 1 (Teams Setup), 2 (Player Selection), 3 (Auction Arena)
-  const [step, setStep] = useState(1); 
+  // Workflow Steps: 0 (Start), 1 (Teams), 2 (Captains), 3 (Selection), 4 (Arena)
+  const [step, setStep] = useState(0); 
   const [numTeams, setNumTeams] = useState(2);
   const [teamNames, setTeamNames] = useState({});
+  const [captains, setCaptains] = useState({}); // { team1: playerId }
   const [selectedIds, setSelectedIds] = useState([]);
   const [auctionQueue, setAuctionQueue] = useState([]);
   const [showSoldModal, setShowSoldModal] = useState(false);
   const [soldData, setSoldData] = useState(null);
+
+  // --- STEP 0: RESET & START NEW ---
+  const handleNewAuction = async () => {
+    // Clear old data from Firebase
+    await remove(ref(db, "teams"));
+    await remove(ref(db, "history"));
+    await set(ref(db, "auction"), {
+      status: "IDLE",
+      currentBid: 0,
+      currentPlayer: null,
+      highestBidder: "",
+      timerEnd: null
+    });
+    // Reset local states
+    setTeamNames({});
+    setCaptains({});
+    setSelectedIds([]);
+    setAuctionQueue([]);
+    setStep(1);
+  };
 
   // --- STEP 1: DYNAMIC TEAM SETUP ---
   const handleTeamSetup = async () => {
@@ -39,24 +60,40 @@ export default function Host() {
     setStep(2);
   };
 
-  // --- STEP 2: PLAYER SELECTION & SKILL ORDERING ---
+  // --- STEP 2: CAPTAIN ASSIGNMENT ---
+  const handleCaptainSelection = async () => {
+    const teamsSnap = await get(ref(db, "teams"));
+    const currentTeams = teamsSnap.val();
+    
+    for (const [teamId, playerId] of Object.entries(captains)) {
+      if (!playerId) continue;
+      const player = masterPlayers.find(p => p.id === parseInt(playerId));
+      const team = currentTeams[teamId];
+      
+      await update(ref(db, `teams/${teamId}`), {
+        purse: team.purse - 1000,
+        players: [{ name: player.name, price: 1000, isCaptain: true, role: player.role }]
+      });
+    }
+    setStep(3);
+  };
+
+  // --- STEP 3: PLAYER SELECTION & SKILL ORDERING ---
   const initializeArena = () => {
-    if (selectedIds.length === 0) return alert("Please select players for the auction!");
+    if (selectedIds.length === 0) return alert("Select players for the pool!");
     
     const selected = masterPlayers.filter(p => selectedIds.includes(p.id));
-    
-    // Skill Order: Batsman -> All-Rounder -> Bowler
     const order = ["Batsman", "All-Rounder", "Bowler"];
     
+    // Sort by Role, then shuffle within role
     const finalizedQueue = order.flatMap(role => {
-      // Filter players by role and shuffle them internally
       return selected
         .filter(p => p.role === role)
         .sort(() => Math.random() - 0.5);
     });
 
     setAuctionQueue(finalizedQueue);
-    setStep(3);
+    setStep(4);
   };
 
   const togglePlayerSelection = (id) => {
@@ -65,9 +102,9 @@ export default function Host() {
     );
   };
 
-  // --- STEP 3: AUCTION CONTROLS ---
+  // --- STEP 4: AUCTION CONTROLS ---
   async function startPlayer() {
-    if (auctionQueue.length === 0) return alert("All selected players have been auctioned!");
+    if (auctionQueue.length === 0) return alert("Auction Pool Empty!");
     
     const nextPlayer = auctionQueue[0];
     const remainingQueue = auctionQueue.slice(1);
@@ -75,7 +112,7 @@ export default function Host() {
 
     await update(ref(db, "auction"), {
       currentPlayer: nextPlayer,
-      currentBid: nextPlayer.basePrice || 1000, // Default to 1000
+      currentBid: 1000,
       highestBidder: "",
       timerEnd: Date.now() + 10000,
       status: "LIVE",
@@ -97,26 +134,22 @@ export default function Host() {
     }
   }
 
-  // --- REAL-TIME TIMER LOGIC ---
+  // Timer Effect
   useEffect(() => {
     if (auction?.status !== "LIVE" || !auction?.timerEnd) return;
-
     const interval = setInterval(async () => {
       if (auction.paused) return;
       const remaining = auction.timerEnd - Date.now();
-
       if (remaining <= 0) {
         clearInterval(interval);
         handleSoldTransition();
       }
     }, 500);
-
     return () => clearInterval(interval);
   }, [auction]);
 
   async function handleSoldTransition() {
     const soldTo = auction.highestBidder;
-    
     if (soldTo) {
       const teamsSnap = await get(ref(db, "teams"));
       const teams = teamsSnap.val();
@@ -126,9 +159,9 @@ export default function Host() {
         const team = teams[teamKey];
         const updatedPlayers = [...(team.players || []), { 
           name: auction.currentPlayer.name, 
-          price: auction.currentBid 
+          price: auction.currentBid,
+          role: auction.currentPlayer.role
         }];
-
         await update(ref(db, `teams/${teamKey}`), {
           purse: team.purse - auction.currentBid,
           players: updatedPlayers
@@ -136,7 +169,6 @@ export default function Host() {
       }
     }
 
-    // Update History Node for Guest View
     await push(ref(db, "history"), {
       player: auction.currentPlayer.name,
       team: soldTo || "Unsold",
@@ -145,17 +177,10 @@ export default function Host() {
       time: new Date().toLocaleTimeString()
     });
 
-    setSoldData({
-      sold: !!soldTo,
-      player: auction.currentPlayer.name,
-      team: soldTo,
-      price: auction.currentBid
-    });
-
+    setSoldData({ sold: !!soldTo, player: auction.currentPlayer.name, team: soldTo, price: auction.currentBid });
     setShowSoldModal(true);
     await update(ref(db, "auction"), { status: "ENDED" });
 
-    // Auto-reset after modal shows for 5 seconds
     setTimeout(async () => {
       setShowSoldModal(false);
       await update(ref(db, "auction"), {
@@ -168,83 +193,96 @@ export default function Host() {
     }, 5000);
   }
 
-  // --- CONDITIONAL RENDERING ---
+  // --- RENDERING VIEWS ---
 
-  // STEP 1: DYNAMIC TEAM NAMES
-  if (step === 1) return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-950">
-      <Card className="w-full max-w-lg p-8 border-white/10 bg-white/5 backdrop-blur-lg">
-        <h2 className="text-3xl font-black text-white mb-2">Team Setup</h2>
-        <p className="text-slate-400 mb-6 text-sm italic">How many teams are playing this weekend?</p>
-        
-        <div className="space-y-4">
-          <input 
-            type="number" 
-            placeholder="No. of Teams"
-            className="w-full p-4 bg-white/10 rounded-xl border border-white/10 outline-none focus:border-blue-500"
-            value={numTeams} 
-            onChange={e => setNumTeams(e.target.value)} 
-          />
-          <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
-            {[...Array(parseInt(numTeams || 0))].map((_, i) => (
-              <input 
-                key={i} 
-                placeholder={`Team ${i+1} Name`} 
-                className="w-full p-3 bg-white/5 rounded-lg border border-white/5 outline-none focus:border-purple-500"
-                onChange={e => setTeamNames({...teamNames, [i+1]: e.target.value})} 
-              />
-            ))}
-          </div>
-          <Button onClick={handleTeamSetup} className="w-full h-14 mt-4 text-lg">Next: Select Players</Button>
-        </div>
+  // STEP 0: DASHBOARD
+  if (step === 0) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
+      <Card className="max-w-md w-full p-10 text-center border-blue-500/20 bg-white/5 backdrop-blur-xl">
+        <h1 className="text-5xl font-black text-white mb-6 italic">HOST</h1>
+        <Button onClick={handleNewAuction} className="w-full h-20 text-2xl shadow-2xl">
+          New Auction
+        </Button>
       </Card>
     </div>
   );
 
-  // STEP 2: PLAYER CHECKBOXES
-  if (step === 2) return (
-    <div className="min-h-screen p-10 bg-slate-950 text-center">
-      <h1 className="text-5xl font-black text-white mb-2">Player Selection</h1>
-      <p className="text-slate-400 mb-10 italic">Tick players available for today's auction</p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12 max-w-6xl mx-auto">
-        {masterPlayers.map(p => (
-          <label 
-            key={p.id} 
-            className={`p-5 rounded-2xl border transition-all flex items-center gap-4 cursor-pointer hover:scale-[1.02] ${
-              selectedIds.includes(p.id) ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.2)]" : "border-white/10 bg-white/5"
-            }`}
-          >
-            <input 
-              type="checkbox" 
-              className="w-6 h-6 rounded-lg accent-blue-500"
-              checked={selectedIds.includes(p.id)}
-              onChange={() => togglePlayerSelection(p.id)} 
-            />
-            <div className="text-left">
-              <p className="font-bold text-white text-lg">{p.name}</p>
-              <p className="text-blue-400 text-xs font-black uppercase tracking-widest">{p.role}</p>
-            </div>
-          </label>
-        ))}
-      </div>
-      
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md px-6">
-        <Button onClick={initializeArena} className="w-full h-16 text-xl shadow-2xl">
-          Enter Auction Arena ({selectedIds.length})
-        </Button>
-      </div>
+  // STEP 1: TEAMS
+  if (step === 1) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
+      <Card className="w-full max-w-lg p-8 border-white/10 bg-white/5">
+        <h2 className="text-3xl font-black text-white mb-6 uppercase italic">1. Team Setup</h2>
+        <input type="number" placeholder="No. of Teams" className="w-full p-4 bg-white/10 rounded-xl mb-4 text-white outline-none" value={numTeams} onChange={e => setNumTeams(e.target.value)} />
+        <div className="max-h-60 overflow-y-auto space-y-2 mb-6 pr-2">
+          {[...Array(parseInt(numTeams || 0))].map((_, i) => (
+            <input key={i} placeholder={`Team ${i+1} Name`} className="w-full p-3 bg-white/5 rounded-lg text-white border border-white/5" onChange={e => setTeamNames({...teamNames, [i+1]: e.target.value})} />
+          ))}
+        </div>
+        <Button onClick={handleTeamSetup} className="w-full h-14">Confirm Teams</Button>
+      </Card>
     </div>
   );
 
-  // STEP 3: THE LIVE CONTROL CENTER
+  // STEP 2: CAPTAINS
+  if (step === 2) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
+      <Card className="w-full max-w-2xl p-8 bg-white/5 border-white/10">
+        <h2 className="text-3xl font-black mb-2 text-white italic text-center uppercase">2. Assign Captains</h2>
+        <p className="text-slate-400 mb-8 italic text-center">Cost: ₹1000 per Captain</p>
+        <div className="space-y-4">
+          {Object.keys(teamNames).map((num) => (
+            <div key={num} className="flex flex-col gap-1">
+              <label className="text-blue-400 font-bold text-xs uppercase">Captain for {teamNames[num]}</label>
+              <select className="w-full p-4 bg-white/10 rounded-xl text-white border border-white/10" onChange={(e) => setCaptains({...captains, [`team${num}`]: e.target.value})}>
+                <option value="">Select a Player</option>
+                {masterPlayers.map(p => (
+                   // Prevent selecting same player for multiple captains locally
+                   <option key={p.id} value={p.id}>{p.name} ({p.role})</option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+        <Button onClick={handleCaptainSelection} className="w-full h-14 mt-8">Confirm Captains</Button>
+      </Card>
+    </div>
+  );
+
+  // STEP 3: SELECTION (Filters out Captains)
+  if (step === 3) {
+    const assignedIds = Object.values(captains).map(id => parseInt(id));
+    const available = masterPlayers.filter(p => !assignedIds.includes(p.id));
+
+    return (
+      <div className="min-h-screen p-10 bg-slate-950 text-center">
+        <h1 className="text-5xl font-black text-white mb-2 italic uppercase">3. Selection Pool</h1>
+        <p className="text-slate-400 mb-10 italic">Only selected players will appear in the auction</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto mb-24">
+          {available.map(p => (
+            <label key={p.id} className={`p-5 rounded-2xl border transition-all flex items-center gap-4 cursor-pointer ${selectedIds.includes(p.id) ? "border-blue-500 bg-blue-500/10 shadow-lg" : "border-white/10 bg-white/5"}`}>
+              <input type="checkbox" className="w-5 h-5 accent-blue-500" checked={selectedIds.includes(p.id)} onChange={() => togglePlayerSelection(p.id)} />
+              <div className="text-left">
+                <p className="font-bold text-white text-lg">{p.name}</p>
+                <p className="text-blue-400 text-xs font-black uppercase tracking-widest">{p.role}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+        <Button onClick={initializeArena} className="fixed bottom-10 left-1/2 -translate-x-1/2 h-16 px-12 text-xl shadow-2xl z-50">
+          Initialize Arena ({selectedIds.length})
+        </Button>
+      </div>
+    );
+  }
+
+  // STEP 4: ARENA
   return (
     <div className="h-screen bg-slate-950 text-white p-6 overflow-hidden flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-black italic tracking-tighter">HOST PANEL</h1>
+          <h1 className="text-4xl font-black italic tracking-tighter uppercase">Arena Control</h1>
           <p className="text-blue-400 text-sm font-bold uppercase tracking-widest">
-            {auctionQueue.length} Players remaining in queue
+            {auctionQueue.length} Players Remaining in Queue
           </p>
         </div>
         <div className="flex gap-4">
@@ -252,31 +290,21 @@ export default function Host() {
           <Button onClick={togglePause} className="h-12 px-8 bg-yellow-500 hover:bg-yellow-600 text-black font-black">
             {auction?.paused ? "RESUME" : "PAUSE"}
           </Button>
+          <Button onClick={() => setStep(0)} className="h-12 px-6 bg-red-500/20 text-red-500 border border-red-500/30">End</Button>
         </div>
       </div>
 
       {auction?.currentPlayer ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
           <PlayerCard player={auction.currentPlayer} compact={true} />
-          
           <div className="flex flex-col gap-6">
             <Card className="flex-1 flex flex-col items-center justify-center p-6 bg-white/5">
-              <h2 className="text-slate-400 text-sm font-bold uppercase mb-6 tracking-widest">Auction Timer</h2>
-              <div className="relative">
-                <TimerRing timeLeft={timeLeft} />
-                {auction?.paused && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full">
-                    <span className="text-2xl font-black text-yellow-400">PAUSED</span>
-                  </div>
-                )}
-              </div>
+               <TimerRing timeLeft={timeLeft} />
             </Card>
-
             <Card className="flex-1 flex flex-col items-center justify-center p-6 bg-white/5">
-              <h2 className="text-slate-400 text-sm font-bold uppercase mb-4 tracking-widest">Current Bid</h2>
               <AnimatedBid bid={auction.currentBid} />
               <div className="mt-4 px-6 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full">
-                <p className="text-blue-400 font-black uppercase">
+                <p className="text-blue-400 font-black uppercase tracking-widest">
                   {auction.highestBidder || "Waiting for Bids..."}
                 </p>
               </div>
@@ -285,16 +313,12 @@ export default function Host() {
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-[40px]">
-          <h2 className="text-4xl font-black text-slate-700 animate-pulse uppercase italic">Ready to start round</h2>
-          <Button onClick={startPlayer} className="mt-8 h-16 px-12 text-xl">Bring Next Player</Button>
+          <h2 className="text-4xl font-black text-slate-700 animate-pulse uppercase italic">Round Complete</h2>
+          <Button onClick={startPlayer} className="mt-8 h-16 px-12 text-xl">Next in Queue</Button>
         </div>
       )}
 
-      <SoldModal 
-        open={showSoldModal} 
-        {...soldData} 
-        onClose={() => setShowSoldModal(false)}
-      />
+      <SoldModal open={showSoldModal} {...soldData} onClose={() => setShowSoldModal(false)} />
     </div>
   );
 }

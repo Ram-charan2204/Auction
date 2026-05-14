@@ -1,57 +1,22 @@
 export const players = [
-  {
-    id: 1,
-    name: "Virat Kohli",
-    role: "Batsman",
-    basePrice: 1000,
-    image: "/players/virat.jpg", // Ensure images exist in public/players/
-    batting: { runs: 550, sr: 145, avg: 42, sixes: 25, fours: 40 },
-    bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 }
-  },
-  {
-    id: 2,
-    name: "Hardik Pandya",
-    role: "All-Rounder",
-    basePrice: 1000,
-    image: "/players/hardik.jpg",
-    batting: { runs: 320, sr: 160, avg: 30, sixes: 30, fours: 12 },
-    bowling: { overs: 24, eco: 8.2, wickets: 12, maidens: 1 }
-  },
-  {
-    id: 3,
-    name: "Jasprit Bumrah",
-    role: "Bowler",
-    basePrice: 1000,
-    image: "/players/bumrah.jpg",
-    batting: { runs: 45, sr: 90, avg: 8, sixes: 2, fours: 4 },
-    bowling: { overs: 40, eco: 6.1, wickets: 22, maidens: 5 }
-  },
-  {
-    id: 4,
-    name: "Rohit Sharma",
-    role: "Batsman",
-    basePrice: 1000,
-    image: "/players/rohit.jpg",
-    batting: { runs: 480, sr: 138, avg: 38, sixes: 22, fours: 35 },
-    bowling: { overs: 2, eco: 9.0, wickets: 0, maidens: 0 }
-  },
-  {
-    id: 5,
-    name: "Ravindra Jadeja",
-    role: "All-Rounder",
-    basePrice: 1000,
-    image: "/players/jadeja.jpg",
-    batting: { runs: 280, sr: 130, avg: 28, sixes: 15, fours: 20 },
-    bowling: { overs: 35, eco: 7.2, wickets: 18, maidens: 3 }
-  },
-  {
-    id: 6,
-    name: "Rashid Khan",
-    role: "Bowler",
-    basePrice: 1000,
-    image: "/players/rashid.jpg",
-    batting: { runs: 120, sr: 155, avg: 15, sixes: 10, fours: 5 },
-    bowling: { overs: 40, eco: 6.4, wickets: 20, maidens: 2 }
-  }
-  // You can add more players following this exact structure
+  { id: 1, name: "Ram Charan", role: "Batsman", basePrice: 1000, image: "/players/ram.jpg", batting: { runs: 450, sr: 138.5, avg: 34.2, sixes: 18, fours: 32 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 2, name: "Rishi", role: "All-Rounder", basePrice: 1000, image: "/players/rishi.jpg", batting: { runs: 280, sr: 142.1, avg: 25.4, sixes: 12, fours: 15 }, bowling: { overs: 24, eco: 7.8, wickets: 10, maidens: 1 } },
+  { id: 3, name: "Rohan", role: "Bowler", basePrice: 1000, image: "/players/rohan.jpg", batting: { runs: 42, sr: 88.4, avg: 6.0, sixes: 1, fours: 3 }, bowling: { overs: 32, eco: 6.2, wickets: 14, maidens: 3 } },
+  { id: 4, name: "Lokesh", role: "Batsman", basePrice: 1000, image: "/players/lokesh.jpg", batting: { runs: 510, sr: 131.2, avg: 41.5, sixes: 15, fours: 48 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 5, name: "Samee", role: "All-Rounder", basePrice: 1000, image: "/players/samee.jpg", batting: { runs: 210, sr: 155.4, avg: 21.0, sixes: 14, fours: 8 }, bowling: { overs: 28, eco: 8.4, wickets: 12, maidens: 0 } },
+  { id: 6, name: "Snehith", role: "Bowler", basePrice: 1000, image: "/players/snehith.jpg", batting: { runs: 35, sr: 95.0, avg: 7.2, sixes: 2, fours: 1 }, bowling: { overs: 35, eco: 5.9, wickets: 18, maidens: 4 } },
+  { id: 7, name: "Kaushik", role: "Batsman", basePrice: 1000, image: "/players/kaushik.jpg", batting: { runs: 390, sr: 145.8, avg: 30.0, sixes: 22, fours: 25 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 8, name: "Akhil", role: "All-Rounder", basePrice: 1000, image: "/players/akhil.jpg", batting: { runs: 310, sr: 128.5, avg: 28.2, sixes: 10, fours: 20 }, bowling: { overs: 22, eco: 7.5, wickets: 9, maidens: 2 } },
+  { id: 9, name: "Ankith", role: "Bowler", basePrice: 1000, image: "/players/ankith.jpg", batting: { runs: 55, sr: 102.0, avg: 9.1, sixes: 3, fours: 4 }, bowling: { overs: 30, eco: 6.8, wickets: 13, maidens: 1 } },
+  { id: 10, name: "Pavan Teja", role: "Batsman", basePrice: 1000, image: "/players/pavan.jpg", batting: { runs: 420, sr: 140.0, avg: 32.5, sixes: 20, fours: 28 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 11, name: "Bhargav", role: "All-Rounder", basePrice: 1000, image: "/players/bhargav.jpg", batting: { runs: 240, sr: 135.2, avg: 22.1, sixes: 9, fours: 14 }, bowling: { overs: 25, eco: 7.9, wickets: 11, maidens: 1 } },
+  { id: 12, name: "Vardhan", role: "Bowler", basePrice: 1000, image: "/players/vardhan.jpg", batting: { runs: 28, sr: 75.6, avg: 4.2, sixes: 0, fours: 2 }, bowling: { overs: 38, eco: 6.0, wickets: 16, maidens: 5 } },
+  { id: 13, name: "Lenin", role: "Batsman", basePrice: 1000, image: "/players/lenin.jpg", batting: { runs: 375, sr: 132.4, avg: 31.0, sixes: 12, fours: 30 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 14, name: "Vijay", role: "All-Rounder", basePrice: 1000, image: "/players/vijay.jpg", batting: { runs: 295, sr: 148.2, avg: 24.5, sixes: 16, fours: 18 }, bowling: { overs: 20, eco: 8.8, wickets: 8, maidens: 0 } },
+  { id: 15, name: "Sathwik", role: "Bowler", basePrice: 1000, image: "/players/sathwik.jpg", batting: { runs: 60, sr: 110.5, avg: 10.0, sixes: 4, fours: 5 }, bowling: { overs: 29, eco: 7.1, wickets: 12, maidens: 1 } },
+  { id: 16, name: "Gandhi", role: "Batsman", basePrice: 1000, image: "/players/gandhi.jpg", batting: { runs: 440, sr: 128.9, avg: 36.7, sixes: 10, fours: 42 }, bowling: { overs: 0, eco: 0, wickets: 0, maidens: 0 } },
+  { id: 17, name: "Chethan", role: "All-Rounder", basePrice: 1000, image: "/players/chethan.jpg", batting: { runs: 330, sr: 134.5, avg: 27.5, sixes: 14, fours: 22 }, bowling: { overs: 26, eco: 7.6, wickets: 10, maidens: 1 } },
+  { id: 18, name: "Aneesh", role: "Bowler", basePrice: 1000, image: "/players/aneesh.jpg", batting: { runs: 48, sr: 92.1, avg: 8.0, sixes: 2, fours: 2 }, bowling: { overs: 34, eco: 6.3, wickets: 15, maidens: 2 } },
+  { id: 19, name: "Ravi", role: "All-Rounder", basePrice: 1000, image: "/players/ravi.jpg", batting: { runs: 265, sr: 140.8, avg: 23.4, sixes: 13, fours: 16 }, bowling: { overs: 24, eco: 8.1, wickets: 11, maidens: 0 } },
+  { id: 20, name: "Nishikanth", role: "Bowler", basePrice: 1000, image: "/players/nishi.jpg", batting: { runs: 32, sr: 80.0, avg: 5.3, sixes: 1, fours: 1 }, bowling: { overs: 36, eco: 6.5, wickets: 14, maidens: 3 } }
 ];
