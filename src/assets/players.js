@@ -20,5 +20,8 @@ export const players = [
   { id: 19, name: "Sai Lenin", role: "All-Rounder", basePrice: 1800, image: "/players/default.jpg", batting: { runs: 6, sr: 600.0, avg: 5.0, sixes: 1, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 8, wickets: 0, eco: 4.0 } },
   { id: 20, name: "Nishikanth Sanga", role: "Batsman", basePrice: 800, image: "/players/default.jpg", batting: { runs: 1, sr: 100.0, avg: 1.0, sixes: 0, fours: 0 }, bowling: { overs: 0.0, maidens: 0, runs: 0, wickets: 0, eco: 0.0 } },
   { id: 21, name: "H. Vardhan Reddy", role: "Bowler", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } },
-  { id: 22, name: "Shiva", role: "Batsman", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } }
+  { id: 22, name: "Shiva", role: "Batsman", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } },
+  { id: 23, name: "Akash Maloth", role: "Bowler", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } },
+  { id: 24, name: "Manoj", role: "Bowler", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } },
+  { id: 25, name: "Sai Charan", role: "Bowler", basePrice: 800, image: "/players/default.jpg", batting: { runs: 0, sr: 0.0, avg: 0.0, sixes: 0, fours: 0 }, bowling: { overs: 2.0, maidens: 0, runs: 42, wickets: 1, eco: 21.0 } }
 ];
