@@ -15,9 +15,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // CHANGED HERE: Converted to form submission handler that intercepts the Enter event
+  // Form submission handler that intercepts the Enter key event natively
   async function handleLogin(e) {
-    if (e) e.preventDefault(); // CRITICAL: Prevents the page from refreshing on form submit
+    if (e) e.preventDefault(); // Prevents the browser page from refreshing on form submit
 
     if (!email || !password) {
       alert("Please enter both email and password");
@@ -71,12 +71,13 @@ export default function Login() {
         <GlassCard className="p-8 md:p-10 border-white/10">
           <div className="mb-10">
             <AnimatedLogo />
+            {/* BRANDING FIXED: Adjusted spacing for cleaner UI layout matching your theme */}
             <p className="text-center text-slate-400 text-sm mt-2 tracking-widest uppercase">
-              Enter the Auction Arena
+              Enter the BidWars Arena
             </p>
           </div>
 
-          {/* CHANGED HERE: Wrapped input fields inside an HTML form element */}
+          {/* Form wrapper catches any "Enter" keyboard strokes on children nodes automatically */}
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">
@@ -102,7 +103,7 @@ export default function Login() {
               />
             </div>
 
-            {/* CHANGED HERE: Added type="submit" so button anchors Enter submission */}
+            {/* type="submit" links this execution node to the native form wrapper listener */}
             <GlowButton
               type="submit"
               disabled={isLoggingIn}

@@ -1,7 +1,7 @@
 import {
   motion
 }
-from "framer-motion";
+  from "framer-motion";
 
 export default function AnimatedLogo() {
 
@@ -56,7 +56,7 @@ export default function AnimatedLogo() {
 
       >
 
-        BIT WARS
+        BID WARS
 
       </motion.h1>
 

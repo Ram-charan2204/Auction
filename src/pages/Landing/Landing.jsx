@@ -1,21 +1,21 @@
 import {
   useNavigate
 }
-from "react-router-dom";
+  from "react-router-dom";
 
 import {
   motion
 }
-from "framer-motion";
+  from "framer-motion";
 
 import AuroraBackground
-from "../../components/AuroraBackground";
+  from "../../components/AuroraBackground";
 
 import AnimatedLogo
-from "../../components/AnimatedLogo";
+  from "../../components/AnimatedLogo";
 
 import GlowButton
-from "../../components/ui/GlowButton";
+  from "../../components/ui/GlowButton";
 
 export default function Landing() {
 

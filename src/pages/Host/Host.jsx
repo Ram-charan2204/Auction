@@ -331,7 +331,8 @@ export default function Host() {
         {/* LEFT COMPONENT: AUCTION GENERATION PANEL */}
         <Card className="col-span-4 p-8 bg-white/5 border-white/10 text-center flex flex-col justify-between min-h-[500px]">
           <div>
-            <h1 className="text-white text-3xl font-black mb-8 italic uppercase tracking-widest">Bid Wars Setup</h1>
+            {/* BRANDING FIXED: Now reads clean BidWars name layout */}
+            <h1 className="text-white text-3xl font-black mb-8 italic uppercase tracking-widest">BidWars Setup</h1>
             <div className="text-left mb-6">
               <label className="text-blue-400 text-xs font-bold uppercase mb-2 block tracking-widest">Max Squad Size</label>
               <input 
@@ -390,7 +391,7 @@ export default function Host() {
                     </div>
                   </div>
                 ) : (
-                  // FIXED HERE: Added Base Price dynamically inside the normal resting column metrics loop
+                  // STATS BAR GRID ROW MATRIX: Contains the symmetrical normal view Base Column mapping layout
                   <div className="flex items-center justify-between w-3/4 pl-4">
                     <div className="grid grid-cols-5 gap-2 text-center text-[11px] text-zinc-400 font-semibold w-full">
                       <div className="text-yellow-400">Base: <span className="text-white font-bold">₹{p.basePrice || 0}</span></div>
