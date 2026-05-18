@@ -15,7 +15,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  async function handleLogin() {
+  // CHANGED HERE: Converted to form submission handler that intercepts the Enter event
+  async function handleLogin(e) {
+    if (e) e.preventDefault(); // CRITICAL: Prevents the page from refreshing on form submit
+
     if (!email || !password) {
       alert("Please enter both email and password");
       return;
@@ -33,23 +36,19 @@ export default function Login() {
 
       // DYNAMIC ROUTING LOGIC
       if (loggedInEmail === "host@gmail.com") {
-        // Route to Host Dashboard
         navigate("/host");
       } 
       else if (loggedInEmail.includes("team")) {
-        // Extract teamId from email (e.g., "team1@gmail.com" -> "team1")
         const teamId = loggedInEmail.split("@")[0];
         navigate(`/team/${teamId}`);
       } 
       else {
-        // Fallback for unauthorized emails
         alert("Unauthorized access. Please use a registered Team or Host account.");
         navigate("/");
       }
     } catch (err) {
       console.error("Login Error:", err.code);
-      // Friendly error messages
-      if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+      if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
         alert("Invalid credentials. Please check your email and password.");
       } else {
         alert("Login failed: " + err.message);
@@ -77,7 +76,8 @@ export default function Login() {
             </p>
           </div>
 
-          <div className="space-y-5">
+          {/* CHANGED HERE: Wrapped input fields inside an HTML form element */}
+          <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">
                 Email Address
@@ -102,14 +102,15 @@ export default function Login() {
               />
             </div>
 
+            {/* CHANGED HERE: Added type="submit" so button anchors Enter submission */}
             <GlowButton
-              onClick={handleLogin}
+              type="submit"
               disabled={isLoggingIn}
               className="w-full h-14 text-lg mt-6 font-black tracking-tighter"
             >
               {isLoggingIn ? "AUTHENTICATING..." : "JOIN AUCTION"}
             </GlowButton>
-          </div>
+          </form>
 
           <div className="mt-8 text-center">
             <button 
