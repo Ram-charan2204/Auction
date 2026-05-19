@@ -59,7 +59,8 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-slate-950">
+    // SRH BACKGROUND: Swapped out slate-950 for premium deep neutral black canvas
+    <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-neutral-950">
       <SpotlightBackground />
 
       <motion.div
@@ -68,19 +69,20 @@ export default function Login() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md z-10"
       >
-        <GlassCard className="p-8 md:p-10 border-white/10">
+        {/* SRH STYLE GLASS CARD OVERLAY WITH ORANGE HIGHLIGHT BORDER */}
+        <GlassCard className="p-8 md:p-10 border-orange-500/10 bg-zinc-900/40 backdrop-blur-2xl">
           <div className="mb-10">
             <AnimatedLogo />
-            {/* BRANDING FIXED: Adjusted spacing for cleaner UI layout matching your theme */}
-            <p className="text-center text-slate-400 text-sm mt-2 tracking-widest uppercase">
+            {/* BRANDING TINT OVERDRIVE */}
+            <p className="text-center text-zinc-400 text-sm mt-2 tracking-widest uppercase font-semibold">
               Enter the BidWars Arena
             </p>
           </div>
 
-          {/* Form wrapper catches any "Enter" keyboard strokes on children nodes automatically */}
+          {/* Form wrapper catches any "Enter" keyboard strokes automatically */}
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+              <label className="text-xs font-bold text-orange-500 uppercase ml-1 tracking-wider">
                 Email Address
               </label>
               <InputField
@@ -88,11 +90,12 @@ export default function Login() {
                 placeholder="host@gmail.com or team1@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="focus:border-orange-500 focus:ring-orange-500/20"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+              <label className="text-xs font-bold text-orange-500 uppercase ml-1 tracking-wider">
                 Password
               </label>
               <InputField
@@ -100,14 +103,15 @@ export default function Login() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="focus:border-orange-500 focus:ring-orange-500/20"
               />
             </div>
 
-            {/* type="submit" links this execution node to the native form wrapper listener */}
+            {/* ACTION TRIGGER DEPLOYMENT: Connected natively with SRH tokens */}
             <GlowButton
               type="submit"
               disabled={isLoggingIn}
-              className="w-full h-14 text-lg mt-6 font-black tracking-tighter"
+              className="w-full h-14 text-lg mt-6 font-black tracking-wider bg-orange-600 hover:bg-orange-500 text-white border-none shadow-lg shadow-orange-600/30 transition-all duration-300"
             >
               {isLoggingIn ? "AUTHENTICATING..." : "JOIN AUCTION"}
             </GlowButton>
@@ -116,7 +120,7 @@ export default function Login() {
           <div className="mt-8 text-center">
             <button 
               onClick={() => navigate("/viewer")}
-              className="text-slate-500 hover:text-blue-400 text-xs font-bold uppercase tracking-widest transition-colors"
+              className="text-zinc-500 hover:text-yellow-500 text-xs font-bold uppercase tracking-widest transition-colors duration-200"
             >
               Back to Audience View
             </button>
@@ -124,9 +128,9 @@ export default function Login() {
         </GlassCard>
       </motion.div>
 
-      {/* Decorative Blur Elements */}
-      <div className="absolute top-1/4 -left-20 w-64 h-64 bg-blue-600/20 rounded-full blur-[100px] -z-1" />
-      <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] -z-1" />
+      {/* SRH FIERY DECORATIVE BLUR FIELDS */}
+      <div className="absolute top-1/4 -left-20 w-64 h-64 bg-orange-600/15 rounded-full blur-[120px] -z-1" />
+      <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-yellow-500/10 rounded-full blur-[120px] -z-1" />
     </div>
   );
 }

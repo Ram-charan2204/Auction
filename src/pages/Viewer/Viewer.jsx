@@ -39,41 +39,41 @@ export default function Viewer() {
   const FinalLeaderboard = () => (
     <div className="w-full max-w-7xl animate-in fade-in zoom-in duration-1000 pb-20">
       <div className="text-center mb-16">
-        <h1 className="text-8xl font-black text-white italic uppercase tracking-tighter animate-pulse mb-4">
+        <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(255,83,22,0.35)] mb-4">
           Auction Completed
         </h1>
-        <p className="text-blue-400 font-bold tracking-[0.5em] uppercase text-xl">Final Squads & Standings</p>
-        <div className="h-1.5 w-40 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-6 rounded-full" />
+        <p className="text-zinc-400 font-black tracking-[0.4em] uppercase text-sm md:text-lg">Final Squads & Standings</p>
+        <div className="h-1 w-40 bg-gradient-to-r from-transparent via-orange-500 to-transparent mx-auto mt-6 rounded-full" />
       </div>
 
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[1, 2, 3].map((i) => {
           const team = allTeams[`team${i}`];
           return (
-            <Card key={i} className="bg-white/5 border-white/10 p-8 flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-all duration-500">
-              <div className="flex justify-between items-end mb-6 border-b border-white/10 pb-4">
+            <Card key={i} className="bg-black/40 border-orange-500/10 p-8 flex flex-col shadow-2xl transform hover:scale-[1.03] transition-all duration-500">
+              <div className="flex justify-between items-end mb-6 border-b border-zinc-800 pb-4">
                 <div>
-                  <h3 className="text-3xl font-black text-white uppercase italic">{team?.name || `Team ${i}`}</h3>
-                  <p className="text-blue-500 text-xs font-bold uppercase tracking-widest mt-1">Tournament Finalist</p>
+                  <h3 className="text-2xl font-black text-orange-500 uppercase italic tracking-wide">{team?.name || `Team ${i}`}</h3>
+                  <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">Tournament Finalist</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-green-400 font-black text-2xl">₹{team?.purse?.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase">Remaining Purse</p>
+                  <p className="text-yellow-400 font-black text-2xl">₹{team?.purse?.toLocaleString()}</p>
+                  <p className="text-[9px] text-zinc-500 font-black uppercase tracking-tighter">Remaining Purse</p>
                 </div>
               </div>
 
               <div className="space-y-3 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
                 {team?.players?.map((p, idx) => (
-                  <div key={idx} className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-colors">
+                  <div key={idx} className="flex justify-between items-center bg-zinc-900/40 p-4 rounded-2xl border border-zinc-800/60 group hover:border-orange-500/20 transition-all">
                     <div>
                       <p className="text-white font-bold text-base">{p.name}</p>
-                      <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">{p.role}</p>
+                      <p className="text-orange-400 text-[10px] font-black uppercase tracking-wider">{p.role}</p>
                     </div>
-                    <span className="text-yellow-500 font-black text-lg">₹{p.price}</span>
+                    <span className="text-yellow-500 font-black text-lg">₹{p.price?.toLocaleString()}</span>
                   </div>
                 ))}
                 {(!team?.players || team?.players.length === 0) && (
-                  <p className="text-slate-600 italic text-center py-10">Empty Squad</p>
+                  <p className="text-zinc-600 italic text-center py-10 text-sm font-semibold">Empty Squad</p>
                 )}
               </div>
             </Card>
@@ -84,42 +84,42 @@ export default function Viewer() {
   );
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white p-8 flex flex-col overflow-hidden">
+    <div className="relative min-h-screen bg-neutral-950 text-white p-6 md:p-8 flex flex-col overflow-hidden select-none">
       <SpotlightBackground />
 
       {/* HEADER BAR */}
-      <div className="relative z-10 flex justify-between items-center mb-12 border-b border-white/5 pb-6">
-        <h1 className="text-5xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-500">
-          Bid Wars <span className="text-blue-600 text-2xl ml-2">Viewer Mode</span>
+      <div className="relative z-10 flex justify-between items-center mb-12 border-b border-orange-500/10 pb-6">
+        <h1 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
+          Bid Wars <span className="text-orange-500 text-xl md:text-2xl ml-2 font-black not-italic border-l border-zinc-800 pl-3">Viewer Arena</span>
         </h1>
         {auction?.status === "LIVE" && (
-          <div className="flex items-center gap-4 bg-red-600/10 border border-red-600/20 px-6 py-2 rounded-full animate-pulse">
-            <div className="w-3 h-3 bg-red-600 rounded-full" />
-            <span className="text-red-500 font-black uppercase text-sm tracking-widest">Live Auction</span>
+          <div className="flex items-center gap-3 bg-orange-500/10 border border-orange-500/20 px-5 py-1.5 rounded-full animate-pulse">
+            <div className="w-2.5 h-2.5 bg-orange-500 rounded-full" />
+            <span className="text-orange-500 font-black uppercase text-xs tracking-widest">Live Arena Stream</span>
           </div>
         )}
       </div>
 
       {/* MAIN VIEWPORT */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full max-w-[1400px] mx-auto">
         {auction?.status === "LIVE" ? (
-          <div className="w-full max-w-6xl grid grid-cols-2 gap-12 items-center">
-            <div className="transform scale-110">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="lg:scale-105">
               <PlayerCard player={auction.currentPlayer} />
             </div>
             
-            <div className="flex flex-col gap-8">
-              <Card className="p-12 bg-white/5 border-white/10 flex flex-col items-center justify-center backdrop-blur-xl">
-                <span className="text-[12rem] font-black leading-none tracking-tighter text-white drop-shadow-2xl">
+            <div className="flex flex-col gap-6 w-full">
+              <Card className={`p-8 bg-black/40 flex flex-col items-center justify-center backdrop-blur-xl transition-all duration-300 ${displayTime <= 3 ? 'border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.15)]' : 'border-orange-500/10'}`}>
+                <span className={`text-8xl md:text-[10rem] font-black leading-none tracking-tighter italic ${displayTime <= 3 ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'text-white'}`}>
                   {displayTime}s
                 </span>
-                <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-xl">Clock Running</p>
+                <p className="text-zinc-500 font-black uppercase tracking-[0.35em] text-sm mt-4">Remaining Timer</p>
               </Card>
 
-              <Card className="p-12 bg-blue-600/5 border-blue-500/30 flex flex-col items-center justify-center backdrop-blur-xl">
+              <Card className="p-8 bg-zinc-900/30 border-orange-500/20 flex flex-col items-center justify-center backdrop-blur-xl">
                 <AnimatedBid bid={auction.currentBid} />
-                <div className="mt-6 bg-blue-600 text-white px-8 py-2 rounded-full font-black uppercase tracking-widest text-lg shadow-[0_0_30px_rgba(37,99,235,0.4)]">
-                  {auction.highestBidder || "Waiting for Bids"}
+                <div className="mt-5 bg-gradient-to-r from-orange-600 to-orange-700 text-white px-8 py-2.5 rounded-xl font-black uppercase tracking-wider text-base shadow-lg shadow-orange-950/40 border border-orange-500/20 text-center max-w-full truncate">
+                  {auction.highestBidder || "Waiting for Opening Bids"}
                 </div>
               </Card>
             </div>
@@ -127,18 +127,18 @@ export default function Viewer() {
         ) : auction?.status === "COMPLETED" ? (
           <FinalLeaderboard />
         ) : (
-          <div className="text-center animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <h2 className="text-slate-600 font-black uppercase tracking-[0.5em] mb-12 text-2xl italic">
+          <div className="text-center animate-in fade-in slide-in-from-bottom-6 duration-700">
+            <h2 className="text-zinc-700 font-black uppercase tracking-[0.4em] mb-10 text-lg md:text-xl italic">
               Next Up In The Arena
             </h2>
             {auction?.upcomingPlayer ? (
-              <div className="opacity-60 scale-95 grayscale blur-[1px] hover:grayscale-0 hover:opacity-100 hover:blur-0 transition-all duration-700">
+              <div className="opacity-40 scale-95 grayscale blur-[0.5px] hover:grayscale-0 hover:opacity-100 hover:blur-0 transition-all duration-500 pointer-events-none">
                 <PlayerCard player={auction.upcomingPlayer} />
               </div>
             ) : (
-              <div className="flex flex-col items-center opacity-20">
-                <div className="w-24 h-24 border-4 border-slate-700 border-t-transparent rounded-full animate-spin mb-6" />
-                <h3 className="text-5xl font-black text-slate-700 uppercase italic">Preparing Next Round</h3>
+              <div className="flex flex-col items-center opacity-30">
+                <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-6" />
+                <h3 className="text-3xl font-black text-zinc-600 uppercase italic tracking-wider">Preparing Next Deck</h3>
               </div>
             )}
           </div>
@@ -147,17 +147,17 @@ export default function Viewer() {
 
       {/* FOOTER ROSTERS (Hide on Completion) */}
       {auction?.status !== "COMPLETED" && (
-        <div className="relative z-10 grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-white/10">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-orange-500/10">
           {[1, 2, 3].map((i) => {
             const team = allTeams[`team${i}`];
             return (
-              <div key={i} className="flex justify-between items-center bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+              <div key={i} className="flex justify-between items-center bg-black/40 border border-orange-500/10 p-5 rounded-2xl backdrop-blur-sm">
                 <div>
-                  <h4 className="text-blue-400 font-black uppercase text-sm tracking-widest">{team?.name || `Team ${i}`}</h4>
-                  <p className="text-slate-500 text-[10px] font-bold uppercase mt-1">Squad: {team?.players?.length || 0} Players</p>
+                  <h4 className="text-orange-500 font-black uppercase text-sm tracking-wide italic">{team?.name || `Team ${i}`}</h4>
+                  <p className="text-zinc-500 text-[10px] font-bold uppercase mt-1">Squad: {team?.players?.length || 0} / 11 Players</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-green-400 font-black text-xl">₹{(team?.purse || 0).toLocaleString()}</p>
+                  <p className="text-yellow-400 font-black text-xl">₹{(team?.purse || 0).toLocaleString()}</p>
                 </div>
               </div>
             );

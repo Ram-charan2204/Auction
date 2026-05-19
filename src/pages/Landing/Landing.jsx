@@ -1,115 +1,71 @@
-import {
-  useNavigate
-}
-  from "react-router-dom";
-
-import {
-  motion
-}
-  from "framer-motion";
-
-import AuroraBackground
-  from "../../components/AuroraBackground";
-
-import AnimatedLogo
-  from "../../components/AnimatedLogo";
-
-import GlowButton
-  from "../../components/ui/GlowButton";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import SpotlightBackground from "../../components/SpotlightBackground";
+import AnimatedLogo from "../../components/AnimatedLogo";
+import GlowButton from "../../components/ui/GlowButton";
 
 export default function Landing() {
-
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   return (
-
     <div
       className="
-
-      relative
-
-      min-h-screen
-
-      overflow-hidden
-
-      flex
-      flex-col
-
-      items-center
-      justify-center
-
-      px-6
-    "
-
+        relative
+        min-h-screen
+        overflow-hidden
+        flex
+        flex-col
+        items-center
+        justify-center
+        px-6
+        bg-neutral-950
+      "
     >
-
-      <AuroraBackground />
+      {/* SRH STYLE MATRIX: Swapped out cold aurora theme fields for orange spotlight highlights */}
+      <SpotlightBackground />
 
       <AnimatedLogo />
 
       <motion.div
-
         initial={{
           opacity: 0,
           y: 50
         }}
-
         animate={{
           opacity: 1,
           y: 0
         }}
-
         transition={{
           delay: 0.8
         }}
-
         className="
-
-        mt-20
-
-        flex
-        flex-col
-        md:flex-row
-
-        gap-6
-      "
-
-      >
-
-        <GlowButton
-
-          onClick={() =>
-            navigate("/login")
-          }
-
-        >
-
-          Enter Auction
-
-        </GlowButton>
-
-        <GlowButton
-
-          onClick={() =>
-            navigate("/viewer")
-          }
-
-          className="
-
-          bg-purple-500
-
-          shadow-purple-500/50
-
-          hover:shadow-purple-400/80
+          mt-20
+          flex
+          flex-col
+          md:flex-row
+          gap-6
+          z-10
         "
-
+      >
+        {/* CORE OPERATIONAL ACCOUNT GATE BUTTON */}
+        <GlowButton
+          onClick={() => navigate("/login")}
         >
-
-          Audience View
-
+          Enter Auction
         </GlowButton>
 
+        {/* SRH STYLING OVERRIDE: Swapped out cold purple elements for fiery sunset gold highlights */}
+        <GlowButton
+          onClick={() => navigate("/viewer")}
+          className="
+            bg-amber-600
+            shadow-amber-600/50
+            hover:shadow-amber-500/80
+            border-amber-500/20
+          "
+        >
+          Audience View
+        </GlowButton>
       </motion.div>
 
     </div>

@@ -1,17 +1,10 @@
-import { motion }
-from "framer-motion";
+import { motion } from "framer-motion";
 
-export default function TimerRing({
-  timeLeft
-}) {
-
-  const danger =
-    timeLeft <= 3;
+export default function TimerRing({ timeLeft }) {
+  const danger = timeLeft <= 3;
 
   return (
-
     <motion.div
-
       animate={
         danger
           ? {
@@ -19,43 +12,33 @@ export default function TimerRing({
             }
           : {}
       }
-
       transition={{
         repeat: Infinity,
         duration: 0.8
       }}
-
       className={`
-
-      w-44
-      h-44
-
-      rounded-full
-
-      flex
-      items-center
-      justify-center
-
-      text-6xl
-      font-bold
-
-      border-4
-
-      shadow-2xl
-
-      ${
-        danger
-
-          ? "border-red-500 bg-red-500/20"
-
-          : "border-blue-500 bg-blue-500/20"
-      }
-    `}
-
+        w-44
+        h-44
+        rounded-full
+        flex
+        items-center
+        justify-center
+        text-6xl
+        font-black
+        italic
+        tracking-tighter
+        border-4
+        shadow-2xl
+        transition-colors
+        duration-300
+        ${
+          danger
+            ? "border-yellow-400 bg-yellow-500/20 text-yellow-400 drop-shadow-[0_0_15px_rgba(234,179,8,0.3)]"
+            : "border-orange-500 bg-orange-600/20 text-white drop-shadow-[0_0_15px_rgba(249,115,22,0.15)]"
+        }
+      `}
     >
-
-      {timeLeft}
-
+      {timeLeft}s
     </motion.div>
   );
 }
