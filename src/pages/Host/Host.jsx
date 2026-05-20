@@ -349,11 +349,11 @@ export default function Host() {
     });
 
     await set(ref(db, "teams"), {
-      team1: { name: "Team 1", purse: 20000, players: [] },
+      team1: { name: "Team 1", purse: 41000, players: [] },
 
-      team2: { name: "Team 2", purse: 20000, players: [] },
+      team2: { name: "Team 2", purse: 41000, players: [] },
 
-      team3: { name: "Team 3", purse: 20000, players: [] },
+      team3: { name: "Team 3", purse: 41000, players: [] },
     });
 
     setCaptains({ team1: "", team2: "", team3: "" });
@@ -641,7 +641,7 @@ export default function Host() {
           <div className="w-3 h-7 bg-orange-600 rounded" />
 
           <h1 className="text-3xl font-black uppercase italic tracking-wider bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent">
-            SRH Orange Army Hub
+            ARENA CONTROL
           </h1>
         </div>
 
