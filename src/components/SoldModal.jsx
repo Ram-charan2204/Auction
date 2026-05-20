@@ -6,7 +6,7 @@ export default function SoldModal({
   player,
   team,
   price,
-  onClose
+  onClose,
 }) {
   return (
     <AnimatePresence>
@@ -30,20 +30,20 @@ export default function SoldModal({
             initial={{
               scale: 0.5,
               opacity: 0,
-              y: 100
+              y: 100,
             }}
             animate={{
               scale: 1,
               opacity: 1,
-              y: 0
+              y: 0,
             }}
             exit={{
               scale: 0.5,
-              opacity: 0
+              opacity: 0,
             }}
             transition={{
               type: "spring",
-              damping: 15
+              damping: 15,
             }}
             className="
               relative
@@ -67,12 +67,12 @@ export default function SoldModal({
                 {/* HAMMER HIT MOTION ANIMATION STATE */}
                 <motion.div
                   animate={{
-                    rotate: [0, -20, 20, -10, 10, 0]
+                    rotate: [0, -20, 20, -10, 10, 0],
                   }}
                   transition={{
                     duration: 1,
                     repeat: Infinity,
-                    repeatDelay: 0.5
+                    repeatDelay: 0.5,
                   }}
                   className="
                     text-7xl
@@ -117,11 +117,11 @@ export default function SoldModal({
                 {/* PREMIUM SUNRISE GOLD PRICE ANCHOR METRICS */}
                 <motion.h2
                   animate={{
-                    scale: [1, 1.04, 1]
+                    scale: [1, 1.04, 1],
                   }}
                   transition={{
                     repeat: Infinity,
-                    duration: 1.5
+                    duration: 1.5,
                   }}
                   className="
                     text-5xl
@@ -132,7 +132,7 @@ export default function SoldModal({
                     mt-6
                   "
                 >
-                  ₹ {price?.toLocaleString() ?? 0}L
+                  ₹ {price?.toLocaleString() ?? 0}
                 </motion.h2>
               </>
             ) : (
@@ -140,12 +140,12 @@ export default function SoldModal({
                 {/* UNSOLD AXE OPERATION ANIMATION */}
                 <motion.div
                   animate={{
-                    rotate: [0, 15, -15, 10, -10, 0]
+                    rotate: [0, 15, -15, 10, -10, 0],
                   }}
                   transition={{
                     duration: 1,
                     repeat: Infinity,
-                    repeatDelay: 0.5
+                    repeatDelay: 0.5,
                   }}
                   className="
                     text-7xl

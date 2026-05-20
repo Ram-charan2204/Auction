@@ -349,11 +349,11 @@ export default function Host() {
     });
 
     await set(ref(db, "teams"), {
-      team1: { name: "Team 1", purse: 20000, players: [] },
+      team1: { name: "Team 1", purse: 41000, players: [] },
 
-      team2: { name: "Team 2", purse: 20000, players: [] },
+      team2: { name: "Team 2", purse: 41000, players: [] },
 
-      team3: { name: "Team 3", purse: 20000, players: [] },
+      team3: { name: "Team 3", purse: 41000, players: [] },
     });
 
     setCaptains({ team1: "", team2: "", team3: "" });
@@ -397,7 +397,7 @@ export default function Host() {
       selectedIds.includes(Number(p.id)),
     );
 
-    const order = ["Batsman", "All-Rounder", "Bowler"];
+    const order = ["All-Rounder", "Batsman", "Bowler"];
 
     const finalized = order.flatMap((role) =>
       selected.filter((p) => p.role === role).sort(() => Math.random() - 0.5),
@@ -409,7 +409,7 @@ export default function Host() {
     await update(ref(db, "auction"), {
       upcomingPlayer: finalized[0] || null,
     });
-    
+
     setStep(3);
   };
 
@@ -641,7 +641,7 @@ export default function Host() {
           <div className="w-3 h-7 bg-orange-600 rounded" />
 
           <h1 className="text-3xl font-black uppercase italic tracking-wider bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent">
-            SRH Orange Army Hub
+            ARENA CONTROL
           </h1>
         </div>
 
@@ -677,7 +677,7 @@ export default function Host() {
 
             <Card className="p-6 bg-zinc-900/60 border-orange-500/10 shadow-xl">
               <h2 className="text-orange-500 text-lg font-black mb-4 italic uppercase tracking-wider border-b border-zinc-800 pb-2">
-                Add New Player Node
+                Add New Player
               </h2>
 
               <form onSubmit={handleAddPlayerSubmit} className="space-y-3.5">
